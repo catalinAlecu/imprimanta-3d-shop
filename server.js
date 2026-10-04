@@ -6,6 +6,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
+app.use(express.static('public'));
 
 // Reads port from env file or it takes port 3000
 const PORT = process.env.PORT || 3000;
