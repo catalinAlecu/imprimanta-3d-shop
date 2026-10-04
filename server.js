@@ -3,10 +3,11 @@ dns.setServers(['8.8.8.8', '8.8.4.4']); // ESERVFAIL error fix
 require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Reads port from env file or it takes port 3000
 const PORT = process.env.PORT || 3000;
