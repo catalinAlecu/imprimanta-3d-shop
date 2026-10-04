@@ -104,3 +104,14 @@ body {
 .recomandari .glass-card .card-body {
     background: transparent;
 }
+
+@media (max-width: 768px) {
+    .hero-video-container {
+        min-height: 65vh; 
+        padding-top: 80px; /* Evităm suprapunerea textului cu meniul de sus */
+    }
+
+    .bg-video {
+        object-position: center center;
+    }
+}
