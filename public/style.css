@@ -107,11 +107,12 @@ body {
 
 @media (max-width: 768px) {
     .hero-video-container {
-        min-height: 85vh; 
-        padding-top: 80px; /* Evităm suprapunerea textului cu meniul de sus */
+        min-height: 95vh; 
+        padding-top: 80px;
     }
-
+    
     .bg-video {
-        object-position: center center;
+        /* Dacă acțiunea e în stânga, folosește 20%. Dacă e în dreapta, încearcă 80%. */
+        object-position: 90% center; 
     }
 }
