@@ -4,44 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magazin Imprimante 3D</title>
-    <link rel="icon" type="images/favicon1.png" href="/images/favicon1.png">
+    <link rel="icon" type="image/png" href="/images/favicon1.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<!-- Navbar -->
+<body>
 
-<nav class="navbar glass-navbar fixed-top">
-  <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="#">
-      <img src="/images/logo.png" alt="Logo" width="50" height="50" class="ms-2 me-3">
-      <span class="fw-bold nume-magazin">Imprimante 3D Shop</span>
-    </a>
-  </div>
-</nav>
+    <!-- Navbar -->
+    <nav class="navbar glass-navbar fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="/images/logo.png" alt="Logo" width="50" height="50" class="ms-2 me-3">
+                <span class="fw-bold nume-magazin">Imprimante 3D Shop</span>
+            </a>
+        </div>
+    </nav>
 
-<!-- Hero Section -->
-<div class="hero-video-container position-relative overflow-hidden text-center text-white d-flex align-items-center">
-    <video autoplay loop muted playsinline class="bg-video">
-    <source src="/images/video_printing.mp4" type="video/mp4">
-  </video>
+    <!-- Hero Section -->
+    <div class="hero-video-container position-relative overflow-hidden text-center text-white d-flex align-items-center">
+        <video autoplay loop muted playsinline class="bg-video">
+            <source src="/images/video_printing.mp4" type="video/mp4">
+        </video>
 
-  <div class="video-overlay"></div>
+        <div class="video-overlay"></div>
 
-  <div class="container position-relative content-z-index py-5 my-5">
-    <h1 class="display-4 fw-bold">Printează-ți Ideile în 3D</h1>
-    <div class="col-lg-6 mx-auto">
-      <p class="lead mb-4">Găsește imprimanta perfectă pentru proiectele tale. De la prototipuri rapide la piese de precizie, oferim echipamente de top pentru toate nevoile tale de fabricație digitală.</p>
-      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <button type="button" class="btn btn-outline-light btn-lg px-4">Vezi produsele</button>
-        <button type="button" class="btn btn-outline-light btn-lg px-4">Află Mai Multe</button>
-      </div>
+        <div class="container position-relative content-z-index py-5 my-5">
+            <h1 class="display-4 fw-bold">Printează-ți Ideile în 3D</h1>
+            <div class="col-lg-6 mx-auto">
+                <p class="lead mb-4">Găsește imprimanta perfectă pentru proiectele tale. De la prototipuri rapide la piese de precizie, oferim echipamente de top pentru toate nevoile tale de fabricație digitală.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <button type="button" class="btn btn-outline-light btn-lg px-4">Vezi produsele</button>
+                    <button type="button" class="btn btn-outline-light btn-lg px-4">Află Mai Multe</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-</div>
+    <!-- About -->
+    <section class="sectiune-despre py-5">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center text-white">
+                    <h2 class="fw-bold mb-4">Transformăm ideile în realitate</h2>
+                    <p class="lead text-secondary">
+                        Suntem o echipă de entuziaști dedicată inovației în fabricația digitală. Oferim echipamente de printare 3D de ultimă generație, materiale premium și consultanță de specialitate. Fie că ești la început de drum sau un profesionist care caută precizie industrială, aici găsești tot ce ai nevoie pentru proiectele tale.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Separator -->
+    <div class="container text-center my-2">
+        <hr class="separator-luminos">
+    </div>
+
+    <!-- Echipamente recomandate -->
+    <section class="recomandari py-5 text-white" style="background-color: #0f0f0f;">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Echipamente Recomandate</h2>
+                <p class="text-secondary">Descoperă tehnologia potrivită pentru proiectele tale</p>
+            </div>
+
+            <div class="row g-4">
+                
+                <!-- Card 1 -->
+                <div class="col-md-4">
+                    <div class="card glass-card bg-transparent h-100 text-center border-0 p-0">
+                        <img src="/images/fdm.png" class="card-img-top m-0 p-0" alt="Imprimanta FDM" style="width: 100%; height: 220px; object-fit: cover;">
+                        <div class="card-body p-4 d-flex flex-column text-white">
+                            <h5 class="card-title fw-bold">Imprimante FDM</h5>
+                            <p class="card-text text-light opacity-75 mb-4">Perfecte pentru prototipare rapidă, machete și piese funcționale rezistente.</p>
+                            <a href="#" class="btn btn-outline-light mt-auto">Vezi Modelele</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-md-4">
+                    <div class="card glass-card bg-transparent h-100 text-center border-0 p-0">
+                        <img src="/images/resin.png" class="card-img-top m-0 p-0" alt="Imprimanta Rasina" style="width: 100%; height: 220px; object-fit: cover;">
+                        <div class="card-body p-4 d-flex flex-column text-white">
+                            <h5 class="card-title fw-bold">Imprimante cu Rășină (SLA)</h5>
+                            <p class="card-text text-light opacity-75 mb-4">Precizie microscopică pentru bijuterii, miniaturi și aplicații dentare.</p>
+                            <a href="#" class="btn btn-outline-light mt-auto">Vezi Modelele</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-md-4">
+                    <div class="card glass-card bg-transparent h-100 text-center border-0 p-0">
+                        <img src="/images/industrial.png" class="card-img-top m-0 p-0" alt="Imprimante Profesionale" style="width: 100%; height: 220px; object-fit: cover;">
+                        <div class="card-body p-4 d-flex flex-column text-white">
+                            <h5 class="card-title fw-bold">Gama Industrială</h5>
+                            <p class="card-text text-light opacity-75 mb-4">Echipamente robuste, concepute pentru producție continuă și volume mari.</p>
+                            <a href="#" class="btn btn-outline-light mt-auto">Vezi Modelele</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div> 
+        </div> 
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>   
     <script src="app.js"></script>
+
 </body>
 </html>
