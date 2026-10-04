@@ -50,3 +50,5 @@ app.get('/api/imprimante', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Serverul ruleaza pe portul ${PORT}.`)
 })
+
+module.exports = app;
