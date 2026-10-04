@@ -107,7 +107,7 @@ body {
 
 @media (max-width: 768px) {
     .hero-video-container {
-        min-height: 65vh; 
+        min-height: 85vh; 
         padding-top: 80px; /* Evităm suprapunerea textului cu meniul de sus */
     }
 
