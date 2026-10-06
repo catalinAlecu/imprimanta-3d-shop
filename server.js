@@ -1,55 +1,71 @@
-const dns = require('dns');
-dns.setServers(['8.8.8.8', '8.8.4.4']); // ESERVFAIL error fix
-require('dotenv').config();
+import dns from 'dns';
+dns.setServers(['8.8.8.8', '8.8.4.4']); 
 
-const express = require('express');
-const path = require('path');
-const mongoose = require('mongoose');
-const app = express();
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+import 'dotenv/config';
+import express from 'express';
+import AdminJS from 'adminjs';
+import AdminJSExpress from '@adminjs/express';
+import * as adminJsMongoose from '@adminjs/mongoose';
+import path from 'path';
+import mongoose from 'mongoose';
 
-// Reads port from env file or it takes port 3000
-const PORT = process.env.PORT || 3000;
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+import Imprimanta from './models/imprimanta.js';
 
-// Database connection
-mongoose.connect(process.env.mongo_uri)
-    .then (() => console.log("Database connected successfully!"))
-    .catch((err) => console.error("Error connecting to MongoDB: ", err));
+AdminJS.registerAdapter(adminJsMongoose);
 
-// Database models
-const Imprimanta = require('./models/imprimanta');
+const start = async () => {
+    const app = express();
 
-app.get('/', (req, res) => {
-    res.send("Server is working!")
-})
+    app.use(express.json());
+    app.use(express.static(path.join(__dirname, 'public')));
 
-
-// API
-app.post('/api/imprimante', async (req, res) => {
-  try {
-    const imprimantaNoua = new Imprimanta(req.body); 
-    const imprimantaSalvata = await imprimantaNoua.save(); 
-    res.status(201).json(imprimantaSalvata); 
-  } catch (eroare) {
-    res.status(400).json({ mesaj: 'Eroare la salvare', detalii: eroare.message });
-  }
-});
-
-app.get('/api/imprimante', async (req, res) => {
     try {
-        const toateImprimantele = await Imprimanta.find();
-        res.status(200).json(toateImprimantele);
-    } catch (error) {
-        res.status(500).json({message: "Could not retreive data", details: error.message});
+        await mongoose.connect(process.env.mongo_uri);
+        console.log("Database connected successfully!");
+    } catch (err) {
+        console.error("Error connecting to MongoDB: ", err);
     }
-});
+
+    const admin = new AdminJS({
+        databases: [mongoose], 
+        rootPath: '/admin',
+    });
+    const adminRouter = AdminJSExpress.buildRouter(admin);
+    app.use(admin.options.rootPath, adminRouter);
 
 
+    app.get('/', (req, res) => {
+        res.send("Server is working!");
+    });
 
-app.listen(PORT, () => {
-    console.log(`Serverul ruleaza pe portul ${PORT}.`)
-})
+    app.post('/api/imprimante', async (req, res) => {
+        try {
+            const imprimantaNoua = new Imprimanta(req.body); 
+            const imprimantaSalvata = await imprimantaNoua.save(); 
+            res.status(201).json(imprimantaSalvata); 
+        } catch (eroare) {
+            res.status(400).json({ mesaj: 'Eroare la salvare', detalii: eroare.message });
+        }
+    });
 
-module.exports = app;
+    app.get('/api/imprimante', async (req, res) => {
+        try {
+            const toateImprimantele = await Imprimanta.find();
+            res.status(200).json(toateImprimantele);
+        } catch (error) {
+            res.status(500).json({message: "Could not retreive data", details: error.message});
+        }
+    });
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Serverul ruleaza pe portul ${PORT}.`);
+        console.log(`AdminJS poate fi accesat la: http://localhost:${PORT}/admin`);
+    });
+};
+
+start();

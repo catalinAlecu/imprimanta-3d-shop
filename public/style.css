@@ -112,7 +112,6 @@ body {
     }
     
     .bg-video {
-        /* Dacă acțiunea e în stânga, folosește 20%. Dacă e în dreapta, încearcă 80%. */
         object-position: 90% center; 
     }
 }

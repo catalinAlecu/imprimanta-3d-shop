@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// 1. Am schimbat 'require' cu 'import'
+import mongoose from 'mongoose';
 
 const schemaImprimanta = new mongoose.Schema({
   marca: {
@@ -38,4 +39,5 @@ const schemaImprimanta = new mongoose.Schema({
   timestamps: true 
 });
 
-module.exports = mongoose.model('Imprimanta', schemaImprimanta);
+const Imprimanta = mongoose.model('Imprimanta', schemaImprimanta);
+export default Imprimanta;

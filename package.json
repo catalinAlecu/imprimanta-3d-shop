@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
@@ -11,11 +12,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
+    "@adminjs/express": "^6.1.1",
+    "@adminjs/mongoose": "^4.1.0",
+    "adminjs": "^7.8.17",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
-    "mongoose": "^9.10.4",
+    "express-formidable": "^1.2.0",
+    "mongoose": "^9.11.0",
     "nodemon": "^3.1.14"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
   }
 }
