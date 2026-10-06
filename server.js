@@ -61,6 +61,8 @@ const start = async () => {
         }
     });
 
+    export default app;
+
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
         console.log(`Serverul ruleaza pe portul ${PORT}.`);
@@ -68,4 +70,3 @@ const start = async () => {
     });
 };
 
-start();
