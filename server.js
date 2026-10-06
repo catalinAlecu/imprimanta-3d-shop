@@ -63,28 +63,6 @@ const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
 );
 app.use(admin.options.rootPath, adminRouter);
 
-app.get('/', (req, res) => {
-    res.send("Server is working!");
-});
-
-app.post('/api/imprimante', async (req, res) => {
-    try {
-        const imprimantaNoua = new Imprimanta(req.body); 
-        const imprimantaSalvata = await imprimantaNoua.save(); 
-        res.status(201).json(imprimantaSalvata); 
-    } catch (eroare) {
-        res.status(400).json({ mesaj: 'Eroare la salvare', detalii: eroare.message });
-    }
-});
-
-app.get('/api/imprimante', async (req, res) => {
-    try {
-        const toateImprimantele = await Imprimanta.find();
-        res.status(200).json(toateImprimantele);
-    } catch (error) {
-        res.status(500).json({message: "Could not retreive data", details: error.message});
-    }
-});
 
 export default app;
 
