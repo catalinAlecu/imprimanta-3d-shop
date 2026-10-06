@@ -1,7 +1,6 @@
 {
   "functions": {
     "server.js": {
-      "includeFiles": "{node_modules/@rollup/rollup-linux-x64-gnu/**,.adminjs/**}"
-    }
+      "includeFiles": "{node_modules/@rollup/rollup-linux-x64-gnu/**,node_modules/@adminjs/design-system/**,node_modules/adminjs/lib/frontend/**,.adminjs/**}"}
   }
 }
