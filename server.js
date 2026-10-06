@@ -7,6 +7,8 @@ import AdminJSExpress from '@adminjs/express';
 import * as adminJsMongoose from '@adminjs/mongoose';
 import path from 'path';
 import mongoose from 'mongoose';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,6 +18,7 @@ import Imprimanta from './models/imprimanta.js';
 AdminJS.registerAdapter(adminJsMongoose);
 
 const app = express();
+app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -29,7 +32,35 @@ const admin = new AdminJS({
     rootPath: '/admin',
 });
 
-const adminRouter = AdminJSExpress.buildRouter(admin);
+
+const MONGO_URI = process.env.mongo_uri || process.env.MONGO_URI;
+
+const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
+    admin,
+    {
+        authenticate: async (email, password) => {
+            if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) return null;
+            if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+                return { email };
+            }
+            return null;
+        },
+        cookieName: 'adminjs',
+        cookiePassword: process.env.COOKIE_SECRET,
+    },
+    null,
+    {
+        store: MongoStore.create({ mongoUrl: MONGO_URI, collectionName: 'sessions' }),
+        resave: false,
+        saveUninitialized: false,
+        secret: process.env.COOKIE_SECRET,
+        cookie: {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 1000 * 60 * 60 * 8,
+        },
+    }
+);
 app.use(admin.options.rootPath, adminRouter);
 
 app.get('/', (req, res) => {
