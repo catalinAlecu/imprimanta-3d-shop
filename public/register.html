@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inregistrare</title>
+    <link rel="icon" type="image/png" href="/images/favicon1.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-dark-theme d-flex align-items-center justify-content-center vh-100 m-0">
+
+    <div class="card border-0 shadow-lg p-4 p-md-5 mx-3 register-card">
+        
+        <div class="text-center mb-4">
+            <h4 class="fw-bold register-title">Inregistrare</h4>
+        </div>
+        
+        <form id="registerForm">
+            <div class="mb-4">
+                <input type="text" id="username" class="form-control material-input" placeholder="* Username" required>
+            </div>
+            <div class="mb-4">
+                <input type="email" id="email" class="form-control material-input" placeholder="* Email address" required>
+            </div>
+            <div class="mb-4">
+                <input type="password" id="password" class="form-control material-input" placeholder="* Password" required>
+            </div>
+            <div class="mb-4">
+                <input type="password" id="repeatPassword" class="form-control material-input" placeholder="* Repeat Password" required>
+            </div>
+            
+            <button type="submit" class="btn w-100 py-2 fw-bold text-white shadow-sm btn-register">
+                Creeaza cont
+            </button>
+        </form>
+
+        <div id="message" class="mt-3 text-center fw-bold"></div>
+        <p class="text-center mt-4 mb-0 login-prompt">
+            Ai deja un cont? <a href="/login.html" class="login-link">Logheaza-te</a>
+        </p>
+    </div>
+
+    <script src="/register.js"></script>
+</body>
+</html>

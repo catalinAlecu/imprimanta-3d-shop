@@ -10,10 +10,9 @@ import mongoose from 'mongoose';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import { fileURLToPath } from 'url';
-
+import Imprimanta from './models/imprimanta.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-import Imprimanta from './models/imprimanta.js';
 
 AdminJS.registerAdapter(adminJsMongoose);
 
@@ -22,6 +21,10 @@ app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'register.html'))
+});
 
 mongoose.connect(process.env.mongo_uri || process.env.MONGO_URI)
     .then(() => console.log("Database connected successfully!"))
