@@ -54,6 +54,31 @@ body {
     z-index: 2;
 }
 
+/* Navbar buttons */
+
+.btn-nav-login {
+    color: #f8f9fa;
+    border: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.btn-nav-login:hover {
+    color: #aeb5b5; 
+}
+
+.btn-nav-register {
+    background-color: #25292a;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn-nav-register:hover {
+    background-color: #3a3f40;
+    color: #ffffff;
+}
+
 /* About */
 .sectiune-despre {
     background-color: #0f0f0f; 
