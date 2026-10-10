@@ -24,12 +24,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views')); 
 
+
 app.get('/', (req, res) => {
     res.render('index');
 });
 
 app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'register.html'))
+    res.render('register', { hideButtons: true });
+});
+
+app.get('/login', (req, res) => {
+    res.render('login', { hideButtons: true });
 });
 
 mongoose.connect(process.env.mongo_uri || process.env.MONGO_URI)
