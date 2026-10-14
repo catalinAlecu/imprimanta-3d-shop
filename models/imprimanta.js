@@ -7,6 +7,11 @@ const schemaImprimanta = new mongoose.Schema({
     required: [true, 'Marca imprimantei este obligatorie (ex: Creality, Prusa)'],
     trim: true
   },
+
+imagine: {
+    type: String
+  },
+
   model: {
     type: String,
     required: [true, 'Modelul este obligatoriu (ex: Ender 3 V2)'],

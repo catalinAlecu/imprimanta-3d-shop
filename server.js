@@ -50,6 +50,18 @@ app.get('/register', (req, res) => {
     res.render('register', { hideButtons: true });
 });
 
+app.get('/models', async (req, res) => {
+    try {
+        const imprimante = await Imprimanta.find({ disponibil: true }); 
+        
+        res.render('models', { imprimante }); 
+        
+    } catch (error) {
+        console.error('Eroare la extragerea imprimantelor:', error);
+        res.status(500).send('Eroare la încărcarea paginii.');
+    }
+});
+
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -92,7 +104,7 @@ app.post('/api/login', async (req, res) => {
         const user = await User.findOne({ email: email });
         
         if (!user) {
-            return res.status(404).json({ message: 'Nu există niciun cont cu acest email!' });
+            return res.status(404).json({ message: 'Nu exista niciun cont cu acest email!' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
