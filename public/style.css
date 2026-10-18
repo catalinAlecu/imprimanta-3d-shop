@@ -233,10 +233,15 @@ body {
 }
 
 .printer-card-img {
-    height: 180px;
-    object-fit: contain;
-    padding: 1rem;
-    background-color: rgba(255, 255, 255, 0.05); 
+.printer-card-img {
+    width: 100%;
+    height: 250px; 
+    object-fit: contain; 
+    background-color: #ffffff; 
+    padding: 1rem; 
+    border-top-left-radius: 8px; 
+    border-top-right-radius: 8px;
+}
 }
 
 .printer-title {

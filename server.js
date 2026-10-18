@@ -3,7 +3,7 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 import 'dotenv/config';
 import session from 'express-session';
 import express from 'express';
-import AdminJS from 'adminjs';
+import AdminJS, { ComponentLoader } from 'adminjs';
 import bcrypt from 'bcryptjs';
 import AdminJSExpress from '@adminjs/express';
 import * as adminJsMongoose from '@adminjs/mongoose';
@@ -11,12 +11,16 @@ import path from 'path';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
 import { fileURLToPath } from 'url';
+import uploadFeature from '@adminjs/upload';
+import { BaseProvider } from '@adminjs/upload';
+import { v2 as cloudinary } from 'cloudinary';
+
 // Models from database
 import Imprimanta from './models/imprimanta.js';
 import User from './models/user.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 AdminJS.registerAdapter(adminJsMongoose);
 
 const app = express();
@@ -39,12 +43,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views')); 
 
-
 app.get('/', (req, res) => {
     res.render('index');
 });
-
-
 
 app.get('/register', (req, res) => {
     res.render('register', { hideButtons: true });
@@ -52,10 +53,12 @@ app.get('/register', (req, res) => {
 
 app.get('/models', async (req, res) => {
     try {
-        const imprimante = await Imprimanta.find({ disponibil: true }); 
-        
-        res.render('models', { imprimante }); 
-        
+        const imprimante = await Imprimanta.find({ disponibil: true });
+
+        res.render('models', { 
+            imprimante,
+            cloudName: process.env.CLOUDINARY_CLOUD_NAME 
+        }); 
     } catch (error) {
         console.error('Eroare la extragerea imprimantelor:', error);
         res.status(500).send('Eroare la încărcarea paginii.');
@@ -84,7 +87,6 @@ app.post('/api/register', async (req, res) => {
         });
         
         await newUser.save();
-
         res.status(201).json({ message: 'Cont creat cu succes!' });
 
     } catch (error) {
@@ -136,11 +138,62 @@ mongoose.connect(process.env.mongo_uri || process.env.MONGO_URI)
     .then(() => console.log("Database connected successfully!"))
     .catch((err) => console.error("Error connecting to MongoDB: ", err));
 
-const admin = new AdminJS({
-    databases: [mongoose], 
-    rootPath: '/admin',
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+class CloudinaryProvider extends BaseProvider {
+    constructor() { 
+        super('cloudinary'); 
+    }
+
+async upload(file, key) {
+    try {
+        console.log("Se incearca upload-ul catre Cloudinary pentru:", key);
+        const rezultat = await cloudinary.uploader.upload(file.path, { public_id: key });
+        console.log("Upload reusit! URL Cloudinary:", rezultat.secure_url);
+    } catch (error) {
+        console.error("Eroare FATALA la upload Cloudinary:", error);
+    }
+}
+
+    async delete(key, bucket) {
+        await cloudinary.uploader.destroy(key);
+    }
+
+    async path(key, bucket) {
+        return `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${key}`;
+    }
+}
+
+const componentLoader = new ComponentLoader();
+
+const admin = new AdminJS({
+    databases: [mongoose], 
+    componentLoader, 
+    resources: [
+        {
+            resource: Imprimanta,
+            features: [
+                uploadFeature({
+                    componentLoader, 
+                    provider: new CloudinaryProvider(),
+                    properties: {
+                        key: 'imagine', 
+                        file: 'Incarca imagine',
+                    },
+                    uploadPath: (record, filename) => {
+                        const numeFaraExtensie = filename.split('.').slice(0, -1).join('.');
+                        return `imprimante3d/${record.id()}_${numeFaraExtensie.replace(/\s+/g, '_')}`;
+                    }
+                })
+            ]
+        }
+    ],
+    rootPath: '/admin',
+});
 
 const MONGO_URI = process.env.mongo_uri || process.env.MONGO_URI;
 
@@ -171,7 +224,6 @@ const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
     }
 );
 app.use(admin.options.rootPath, adminRouter);
-
 
 export default app;
 

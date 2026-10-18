@@ -16,9 +16,11 @@
   "dependencies": {
     "@adminjs/express": "^6.1.1",
     "@adminjs/mongoose": "^4.1.0",
+    "@adminjs/upload": "^4.0.2",
     "adminjs": "^7.8.17",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "connect-mongo": "^6.0.0",
     "dotenv": "^18.0.5",
     "ejs": "^7.0.1",
