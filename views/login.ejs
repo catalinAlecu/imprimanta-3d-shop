@@ -26,8 +26,13 @@
                 <input type="password" id="password" class="form-control material-input" placeholder="* Password" required>
             </div>
             
-            <button type="submit" class="btn w-100 py-2 fw-bold text-white shadow-sm btn-register">
-                Intră în cont
+            <button type="submit" id="btn-login" class="btn w-100 py-2 fw-bold text-white shadow-sm btn-register">
+                Intra in cont
+            </button>
+
+            <button id="btn-loading" class="btn w-100 py-2 fw-bold text-white shadow-sm btn-register d-none" type="button" disabled>
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Se logheaza...
             </button>
         </form>
 
@@ -37,7 +42,6 @@
         </p>
     </div>
 
-    <!-- To do -->
     <script src="/login.js"></script> 
 </body>
 </html>
