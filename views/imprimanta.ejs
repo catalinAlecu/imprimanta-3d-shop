@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= imprimanta.marca %> <%= imprimanta.model %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css"> 
+</head>
+<body class="bg-dark text-light">
+
+    <div class="container mt-5">
+        <a href="/models" class="btn btn-outline-light mb-4">
+            &larr; Înapoi la catalog
+        </a>
+
+        <div class="row align-items-center">
+            <div class="col-md-5 col-lg-4 mb-4">
+                <div class="product-image-container">
+                    <img src="<%= imprimanta.imagine ? 'https://res.cloudinary.com/' + cloudName + '/image/upload/' + imprimanta.imagine : '/images/default.jpg' %>" 
+                         alt="<%= imprimanta.model %>">
+                </div>
+            </div>
+
+            <div class="col-md-7 col-lg-7 offset-lg-1 mb-4">
+                <span class="badge bg-primary mb-2"><%= imprimanta.tehnologie %></span>
+                <span class="badge bg-secondary mb-2"><%= imprimanta.stare || 'Nou' %></span>
+                
+                <h1 class="fw-bold mb-3"><%= imprimanta.marca %> <%= imprimanta.model %></h1>
+                
+                <p class="fs-5 text-secondary">
+                    <%= imprimanta.descriere || 'Acest produs nu are încă o descriere detaliată.' %>
+                </p>
+                
+                <hr class="my-4 border-secondary">
+                
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="price-tag">
+                        <%= imprimanta.pret %> <span class="fs-7">RON</span>
+                    </div>
+                    
+                    <button class="btn btn-info btn-lg text-dark fw-bold px-4 rounded-pill">
+                        Adauga în cos
+                    </button>
+                </div>
+            </div>
+
+            <% if (imprimanta.detaliiSuplimentare) { %>
+                    <div class="mt-5 p-4 rounded" style="background-color: #1a1c1d; border: 1px solid #333;">
+                        <h4 class="text-info mb-4">Specificații și Detalii Suplimentare</h4>
+                        
+                        <ul class="text-light" style="line-height: 1.8; font-size: 1.1rem;">
+                            <% 
+                               let linii = imprimanta.detaliiSuplimentare.split('\n');
+                               linii.forEach(function(linie) { 
+                                   if (linie.trim() !== '') { 
+                            %>
+                                       <li><%= linie.trim() %></li>
+                            <% 
+                                   } 
+                               }); 
+                            %>
+                        </ul>
+                    </div>
+                <% } %>
+
+        </div>
+    </div>
+
+</body>
+</html>

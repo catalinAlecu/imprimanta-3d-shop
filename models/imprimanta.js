@@ -36,6 +36,12 @@ imagine: {
     type: String,
     required: [true, 'Descrierea este necesară pentru a detalia anunțul']
   },
+
+  detaliiSuplimentare: {
+        type: String,
+        required: false
+    },
+
   disponibil: {
     type: Boolean,
     default: true

@@ -65,6 +65,25 @@ app.get('/models', async (req, res) => {
     }
 });
 
+app.get('/imprimanta/:id', async (req, res) => {
+    try {
+        const imprimantaGasita = await Imprimanta.findById(req.params.id);
+
+        if (!imprimantaGasita) {
+            return res.status(404).send('Produsul nu a fost gasit.');
+        }
+
+        res.render('imprimanta', { 
+            imprimanta: imprimantaGasita,
+            cloudName: process.env.CLOUDINARY_CLOUD_NAME
+        });
+
+    } catch (error) {
+        console.error('Eroare la deschiderea paginii produsului:', error);
+        res.status(500).send('Link invalid sau eroare pe server.');
+    }
+});
+
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -176,6 +195,13 @@ const admin = new AdminJS({
     resources: [
         {
             resource: Imprimanta,
+            options: {
+                properties: {
+                    detaliiSuplimentare: {
+                        type: 'textarea', 
+                    }
+                }
+            },
             features: [
                 uploadFeature({
                     componentLoader, 

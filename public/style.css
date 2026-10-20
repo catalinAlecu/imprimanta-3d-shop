@@ -233,16 +233,15 @@ body {
 }
 
 .printer-card-img {
-.printer-card-img {
     width: 100%;
-    height: 250px; 
+    height: 350px; 
     object-fit: contain; 
     background-color: #ffffff; 
     padding: 1rem; 
     border-top-left-radius: 8px; 
     border-top-right-radius: 8px;
 }
-}
+
 
 .printer-title {
     font-size: 1rem;
@@ -257,4 +256,27 @@ body {
 
 .currency-text {
     font-size: 0.8rem;
+}
+
+/* Products */
+
+.product-image-container {
+    background-color: #ffffff;
+    padding: 1.5rem; 
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.product-image-container img {
+    max-height: 500px; 
+    width: auto; 
+    max-width: 100%; 
+    object-fit: contain;
+}
+
+.price-tag {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0dcaf0;
 }
