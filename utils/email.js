@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export const sendFirstEmail = async (userEmail, userName) => {
     try {
         const { data, error } = await resend.emails.send({
-            from: '3DPrintShop<onboarding@resend.dev>',
+            from: '3D Print Shop <contact@clinicata.site>',
             to: [userEmail],
             subject: 'Bine ai venit pe platforma 3D Print Shop!',
             html: `
