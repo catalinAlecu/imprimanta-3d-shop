@@ -14,6 +14,7 @@ import { fileURLToPath } from 'url';
 import uploadFeature from '@adminjs/upload';
 import { BaseProvider } from '@adminjs/upload';
 import { v2 as cloudinary } from 'cloudinary';
+import { sendFirstEmail } from './utils/email.js';
 
 // Models from database
 import Imprimanta from './models/imprimanta.js';
@@ -106,10 +107,11 @@ app.post('/api/register', async (req, res) => {
         });
         
         await newUser.save();
+        await sendFirstEmail(email, username);
         res.status(201).json({ message: 'Cont creat cu succes!' });
 
     } catch (error) {
-        console.error('Eroare la înregistrare:', error);
+        console.error('Eroare la inregistrare:', error);
         res.status(500).json({ message: 'Eroare internă a serverului.' });
     }
 });
@@ -259,3 +261,4 @@ if (process.env.NODE_ENV !== 'production') {
         console.log(`Serverul ruleaza local pe portul ${PORT}.`);
     });
 }
+

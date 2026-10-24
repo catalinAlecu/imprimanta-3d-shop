@@ -1,11 +1,19 @@
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault(); 
 
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const repeatPassword = document.getElementById('repeatPassword').value;
     const messageDiv = document.getElementById('message');
+
+    const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+
+    if (!turnstileToken) {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = 'Te rugam sa bifezi verificarea de securitate!';
+        return;
+    }
 
     if (password !== repeatPassword) {
         messageDiv.style.color = 'red';
@@ -19,7 +27,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, email, password }) 
+            body: JSON.stringify({ username, email, password, turnstileToken }) 
         });
 
         const data = await response.json();
@@ -34,10 +42,12 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         } else {
             messageDiv.style.color = 'red';
             messageDiv.textContent = data.message || 'Eroare la inregistrare.';
+            if (window.turnstile) window.turnstile.reset();
         }
         
     } catch (error) {
         messageDiv.style.color = 'red';
         messageDiv.textContent = 'Eroare de conexiune cu serverul.';
+        if (window.turnstile) window.turnstile.reset();
     }
 });
