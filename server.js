@@ -11,8 +11,7 @@ import path from 'path';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
 import { fileURLToPath } from 'url';
-import uploadFeature from '@adminjs/upload';
-import { BaseProvider } from '@adminjs/upload';
+import uploadFeature, { BaseProvider } from '@adminjs/upload';
 import { v2 as cloudinary } from 'cloudinary';
 import { sendFirstEmail } from './utils/email.js';
 
@@ -29,10 +28,13 @@ app.set('trust proxy', 1);
 
 app.use(express.json());
 
+const MONGO_URI = process.env.mongo_uri || process.env.MONGO_URI;
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: MONGO_URI, collectionName: 'user_sessions' })
 }));
 
 app.use((req, res, next) => {
@@ -87,8 +89,27 @@ app.get('/imprimanta/:id', async (req, res) => {
 
 app.post('/api/register', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, turnstileToken } = req.body;
 
+        if (!turnstileToken) {
+            return res.status(400).json({ message: 'Te rugam sa bifezi verificarea de securitate!' });
+        }
+
+        const verifyFormData = new URLSearchParams();
+        verifyFormData.append('secret', process.env.TURNSTILE_SECRET_KEY);
+        verifyFormData.append('response', turnstileToken);
+
+        const cfResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            body: verifyFormData,
+        });
+        const outcome = await cfResponse.json();
+
+        if (!outcome.success) {
+            return res.status(400).json({ message: 'Verificarea anti-bot a eșuat. Reîncearcă!' });
+        }
+
+        // 3. Verificăm dacă utilizatorul există deja
         const existingUser = await User.findOne({ 
             $or: [{ email: email }, { username: username }] 
         });
@@ -136,7 +157,6 @@ app.post('/api/login', async (req, res) => {
             return res.status(401).json({ message: 'Parolă incorectă!' });
         }
 
-        // User session after login
         req.session.user = {
             id: user._id,
             username: user.username
@@ -155,7 +175,7 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-mongoose.connect(process.env.mongo_uri || process.env.MONGO_URI)
+mongoose.connect(MONGO_URI)
     .then(() => console.log("Database connected successfully!"))
     .catch((err) => console.error("Error connecting to MongoDB: ", err));
 
@@ -170,15 +190,15 @@ class CloudinaryProvider extends BaseProvider {
         super('cloudinary'); 
     }
 
-async upload(file, key) {
-    try {
-        console.log("Se incearca upload-ul catre Cloudinary pentru:", key);
-        const rezultat = await cloudinary.uploader.upload(file.path, { public_id: key });
-        console.log("Upload reusit! URL Cloudinary:", rezultat.secure_url);
-    } catch (error) {
-        console.error("Eroare FATALA la upload Cloudinary:", error);
+    async upload(file, key) {
+        try {
+            console.log("Se incearca upload-ul catre Cloudinary pentru:", key);
+            const rezultat = await cloudinary.uploader.upload(file.path, { public_id: key });
+            console.log("Upload reusit! URL Cloudinary:", rezultat.secure_url);
+        } catch (error) {
+            console.error("Eroare FATALA la upload Cloudinary:", error);
+        }
     }
-}
 
     async delete(key, bucket) {
         await cloudinary.uploader.destroy(key);
@@ -223,7 +243,10 @@ const admin = new AdminJS({
     rootPath: '/admin',
 });
 
-const MONGO_URI = process.env.mongo_uri || process.env.MONGO_URI;
+app.get('/admin/frontend/assets/components.bundle.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(__dirname, '.adminjs', 'bundle.js'));
+});
 
 const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
     admin,
@@ -251,6 +274,7 @@ const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
         },
     }
 );
+
 app.use(admin.options.rootPath, adminRouter);
 
 export default app;
@@ -261,4 +285,3 @@ if (process.env.NODE_ENV !== 'production') {
         console.log(`Serverul ruleaza local pe portul ${PORT}.`);
     });
 }
-
