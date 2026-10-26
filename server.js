@@ -245,7 +245,84 @@ const admin = new AdminJS({
 
 app.get('/admin/frontend/assets/components.bundle.js', (req, res) => {
     res.setHeader('Content-Type', 'application/javascript');
-    res.sendFile(path.join(__dirname, '.adminjs', 'bundle.js'));
+    res.send(`
+        window.AdminJS = window.AdminJS || {};
+        window.AdminJS.UserComponents = window.AdminJS.UserComponents || {};
+
+        // 1. Componenta pentru formularul de Upload (New / Edit)
+        window.AdminJS.UserComponents.UploadEditComponent = function(props) {
+            const { property, onChange, record } = props;
+            const imagineExistenta = record && record.params && record.params.imagine;
+
+            return React.createElement(
+                'div',
+                { style: { marginBottom: '20px' } },
+                React.createElement(
+                    'label',
+                    { style: { display: 'block', marginBottom: '8px', fontSize: '12px', color: '#898A9A' } },
+                    property.label || 'Încarcă imagine'
+                ),
+                imagineExistenta ? React.createElement(
+                    'div',
+                    { style: { marginBottom: '8px', fontSize: '12px', color: '#28a745' } },
+                    'Imagine actuală: ' + imagineExistenta
+                ) : null,
+                React.createElement('input', {
+                    type: 'file',
+                    accept: 'image/*',
+                    onChange: function(e) {
+                        if (e.target.files && e.target.files[0]) {
+                            onChange(property.name, e.target.files[0]);
+                        }
+                    },
+                    style: {
+                        padding: '8px',
+                        border: '1px solid #ccc',
+                        borderRadius: '4px',
+                        width: '100%'
+                    }
+                })
+            );
+        };
+
+        // 2. Componenta pentru afișarea în tabel (List)
+        window.AdminJS.UserComponents.UploadListComponent = function(props) {
+            const { record } = props;
+            const filePath = record && record.params && record.params.filePath;
+            const imagine = record && record.params && record.params.imagine;
+
+            if (filePath) {
+                return React.createElement('img', {
+                    src: filePath,
+                    alt: 'Produs',
+                    style: { height: '40px', width: '40px', objectFit: 'contain', borderRadius: '4px', background: '#fff' }
+                });
+            }
+            return React.createElement('span', null, imagine ? 'Imagine încărcată' : 'Fără imagine');
+        };
+
+        // 3. Componenta pentru pagina de detalii produs în AdminJS (Show)
+        window.AdminJS.UserComponents.UploadShowComponent = function(props) {
+            const { property, record } = props;
+            const filePath = record && record.params && record.params.filePath;
+            const imagine = record && record.params && record.params.imagine;
+
+            return React.createElement(
+                'div',
+                { style: { marginBottom: '20px' } },
+                React.createElement(
+                    'label',
+                    { style: { display: 'block', marginBottom: '8px', fontSize: '12px', color: '#898A9A' } },
+                    property.label || 'Imagine'
+                ),
+                filePath ? React.createElement('img', {
+                    src: filePath,
+                    alt: 'Produs',
+                    style: { maxHeight: '150px', objectFit: 'contain', borderRadius: '8px', background: '#fff', padding: '8px', border: '1px solid #eee' }
+                }) : React.createElement('span', null, imagine || 'Fără imagine')
+            );
+        };
+    `);
 });
 
 const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
