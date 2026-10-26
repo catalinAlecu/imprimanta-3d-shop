@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark glass-navbar fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="/">
-            <img src="/images/logo.png" alt="Logo" width="50" height="50" class="ms-2 me-3">
+            <img src="/images/logo.png" alt="Logo" width="45" height="45" class="ms-2 me-3">
             <span class="fw-bold nume-magazin">Imprimante 3D Shop</span>
         </a>
         
@@ -10,15 +10,17 @@
         </button>
             
         <div class="collapse navbar-collapse" id="meniuMobil">
-            <div class="d-flex flex-column flex-lg-row gap-4 align-items-center align-items-lg-center ms-auto mt-4 mt-lg-0 pb-3 pb-lg-0">
+            <div class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center ms-auto my-3 my-lg-0">
                 
+
                 <% if (user) { %>
-                    
-                    <span class="text-light fw-bold me-3">Bine ai venit, <%= user.username %>!</span>
-                    <a href="/logout" class="btn btn-danger px-3">Delogare</a>
+                    <a href="/cart" class="text-warning text-decoration-none fw-bold px-2 d-flex align-items-center cart-animation">
+                        <img src="/images/cart_icon.png" alt="Cart" width="30" height="30" class="me-2">
+                    </a>
+                    <span class="text-light fw-semibold px-2">Salut, <%= user.username %>!</span>
+                    <a href="/logout" class="btn btn-danger btn-sm px-3 ms-lg-2">Delogare</a>
                     
                 <% } else { %>
-                    
                     <% if (typeof hideButtons === 'undefined' || !hideButtons) { %>
                         <a href="/login" class="btn btn-nav-login px-3">Logare</a>
                         <a href="/register" class="btn btn-nav-register px-4 py-2">Inregistrare</a>   

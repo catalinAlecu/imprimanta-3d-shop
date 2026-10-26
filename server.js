@@ -352,6 +352,16 @@ const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
     }
 );
 
+app.get('/cart', (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    res.render('cart', { 
+        user: req.session.user 
+    });
+});
+
 app.use(admin.options.rootPath, adminRouter);
 
 export default app;
