@@ -42,7 +42,13 @@
                                     <h3 class="fw-bold mb-0 text-accent">
                                         <%= imprimanta.pret %> <span class="currency-text">RON</span>
                                     </h3>
-                                    <button class="btn btn-outline-light rounded-pill px-4">Adaugă în coș</button>
+
+
+                                    <form action="/cart/add/<%= imprimanta._id %>" method="POST" class="m-0 p-0 position-relative z-3">
+                                        <button type="submit" class="btn btn-outline-light rounded-pill px-4">
+                                            Adauga în cos
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             

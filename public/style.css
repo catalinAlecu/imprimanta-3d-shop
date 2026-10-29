@@ -1,15 +1,26 @@
+:root {
+    --bg: #0f0f0f;
+    --text: #f2f2f3;
+    --text-muted: #a1a1a8;
+    --text-subtle: #6b6b73;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-bg-hover: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-border-hover: rgba(255, 255, 255, 0.3);
+}
+
 body {
-    background-color: #0f0f0f;
+    background-color: var(--bg);
     color: #ffffff;
 }
 
 /* Navbar */
 .glass-navbar {
-    background: rgba(247, 244, 244, 0.2); 
-    backdrop-filter: blur(12px); 
+    background: rgba(247, 244, 244, 0.2);
+    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(91, 80, 80, 0.4); 
-    box-shadow: 0 4px 30px rgba(34, 29, 29, 0.4); 
+    border-bottom: 1px solid rgba(91, 80, 80, 0.4);
+    box-shadow: 0 4px 30px rgba(34, 29, 29, 0.4);
     transition: all 0.3s ease;
 }
 
@@ -30,15 +41,15 @@ body {
 }
 
 .nume-magazin {
-    color: #b5b4b3;        
-    font-size: 1.2rem;        
-    letter-spacing: 1px;      
+    color: #b5b4b3;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
 /* Hero Video */
 .hero-video-container {
-    min-height: 95vh; 
+    min-height: 95vh;
     background-color: #000;
     margin-bottom: 0;
 }
@@ -52,7 +63,7 @@ body {
     width: auto;
     height: auto;
     transform: translate(-50%, -50%);
-    object-fit: cover; 
+    object-fit: cover;
     z-index: 0;
 }
 
@@ -71,7 +82,6 @@ body {
 }
 
 /* Navbar buttons */
-
 .btn-nav-login {
     color: #f8f9fa;
     border: none;
@@ -79,7 +89,7 @@ body {
 }
 
 .btn-nav-login:hover {
-    color: #aeb5b5; 
+    color: #aeb5b5;
 }
 
 .btn-nav-register {
@@ -97,10 +107,14 @@ body {
 
 /* About */
 .sectiune-despre {
-    background-color: #0f0f0f; 
+    background-color: var(--bg);
     box-shadow: inset 0 20px 20px -20px rgba(0, 0, 0, 1);
 }
 
+.sectiune-despre p {
+    color: var(--text-muted);
+    font-weight: 400;
+}
 
 .separator-luminos {
     border: 0;
@@ -108,28 +122,28 @@ body {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
     width: 60%;
     margin: 0 auto;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); 
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .recomandari {
-    background-color: #0f0f0f; 
+    background-color: var(--bg);
 }
 
+/* Cards (glass) */
 .glass-card {
-    background: rgba(255, 255, 255, 0.03) !important; 
+    background: var(--glass-bg) !important;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
     border-radius: 16px;
     overflow: hidden;
     transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
 }
 
-/* Cards */
 .glass-card:hover {
-    transform: translateY(-8px); 
-    background: rgba(255, 255, 255, 0.08); 
-    border-color: rgba(255, 255, 255, 0.3); 
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--glass-border-hover);
 }
 
 .recomandari .glass-card .card-img-top {
@@ -148,25 +162,23 @@ body {
 
 @media (max-width: 768px) {
     .hero-video-container {
-        min-height: 95vh; 
+        min-height: 95vh;
         padding-top: 80px;
     }
-    
+
     .bg-video {
-        object-position: 90% center; 
+        object-position: 90% center;
     }
 }
 
 /* Register */
-
 .bg-dark-theme {
     background-color: #1f1d1d;
-
 }
 
 .material-input {
     border: none;
-    border-bottom: 2px solid #cccccc; 
+    border-bottom: 2px solid #cccccc;
     border-radius: 0;
     padding: 10px 0 5px 0;
     background-color: transparent;
@@ -174,7 +186,7 @@ body {
 }
 
 .material-input:focus {
-    border-color: #222222; 
+    border-color: #222222;
     background-color: transparent;
 }
 
@@ -183,20 +195,19 @@ body {
     font-size: 0.9rem;
 }
 
-
 .register-card {
-    max-width: 450px; 
-    width: 100%; 
+    max-width: 450px;
+    width: 100%;
     border-radius: 12px;
-    background-color: #ffffff; 
+    background-color: #ffffff;
 }
 
 .register-title {
-    color: #222222; 
+    color: #222222;
 }
 
 .btn-register {
-    background-color: #222222; 
+    background-color: #222222;
     border-radius: 4px;
     border: none;
     color: #ffffff;
@@ -204,29 +215,27 @@ body {
 }
 
 .btn-register:hover {
-    background-color: #555555; 
+    background-color: #555555;
     color: #ffffff;
 }
 
 .login-prompt {
-    font-size: 0.85rem; 
-    color: #666666; 
+    font-size: 0.85rem;
+    color: #666666;
 }
 
 .login-link {
-    color: #222222; 
-    text-decoration: none; 
+    color: #222222;
+    text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
 .login-link:hover {
-    color: #666666; 
+    color: #666666;
     text-decoration: underline;
 }
 
-
-/* models ejs */
 
 .models-container {
     margin-top: 100px;
@@ -234,65 +243,130 @@ body {
 }
 
 .text-accent {
-    color: #00b4d8;
+    color: var(--text);
 }
 
 .printer-card {
-    border-radius: 8px;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background: var(--glass-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
     cursor: pointer;
 }
 
 .printer-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5) !important;
+    background: var(--glass-bg-hover) !important;
+    border-color: var(--glass-border-hover) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
 }
 
 .printer-card-img {
     width: 100%;
-    height: 350px; 
-    object-fit: contain; 
-    background-color: #ffffff; 
-    padding: 1rem; 
-    border-top-left-radius: 8px; 
-    border-top-right-radius: 8px;
+    height: 250px;
+    object-fit: contain;
+    background-color: #ffffff;
+    padding: 1rem;
 }
-
 
 .printer-title {
     font-size: 1rem;
     line-height: 1.2;
-    height: 2.4em; 
+    height: 2.4em;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    color: var(--text);
 }
 
 .currency-text {
     font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
-/* Products */
 
 .product-image-container {
     background-color: #ffffff;
-    padding: 1.5rem; 
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    border-radius: 16px;
     text-align: center;
 }
 
 .product-image-container img {
-    max-height: 500px; 
-    width: auto; 
-    max-width: 100%; 
+    max-height: 500px;
+    width: auto;
+    max-width: 100%;
     object-fit: contain;
 }
 
 .price-tag {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #0dcaf0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.product-desc {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.specs-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+}
+
+.specs-card h3,
+.specs-card h4 {
+    color: var(--text);
+}
+
+.specs-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.specs-card li {
+    padding: 0.75rem 0;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.specs-card li:last-child {
+    border-bottom: 0;
+}
+
+.specs-card li strong {
+    color: var(--text);
+    margin-right: 0.5rem;
+}
+
+.btn-buy,
+.models-container .btn-primary,
+.product-page .btn-primary {
+    background-color: var(--text);
+    border: none;
+    color: var(--bg);
+    font-weight: 700;
+    transition: background-color 0.2s ease;
+}
+
+.btn-buy:hover,
+.models-container .btn-primary:hover,
+.product-page .btn-primary:hover {
+    background-color: #ffffff;
+    color: var(--bg);
+}
+
+.badge.bg-primary,
+.badge.bg-secondary {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-muted) !important;
+    font-weight: 500;
 }

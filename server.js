@@ -33,7 +33,7 @@ const MONGO_URI = process.env.mongo_uri || process.env.MONGO_URI;
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: MongoStore.create({ mongoUrl: MONGO_URI, collectionName: 'user_sessions' })
 }));
 
@@ -109,7 +109,6 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ message: 'Verificarea anti-bot a eșuat. Reîncearcă!' });
         }
 
-        // 3. Verificăm dacă utilizatorul există deja
         const existingUser = await User.findOne({ 
             $or: [{ email: email }, { username: username }] 
         });
@@ -167,6 +166,72 @@ app.post('/api/login', async (req, res) => {
     } catch (error) {
         console.error('Eroare la logare:', error);
         res.status(500).json({ message: 'Eroare internă a serverului.' });
+    }
+});
+
+app.post('/cart/add/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        
+        const imprimanta = await Imprimanta.findById(productId).lean();
+        
+        if (!imprimanta) {
+            return res.status(404).send('Imprimanta nu a fost găsită');
+        }
+
+        if (!req.session.cart) {
+            req.session.cart = { items: {}, totalItems: 0 };
+        }
+
+        const cart = req.session.cart;
+        if (cart.items[productId]) {
+            cart.items[productId].quantity++;
+        } else {
+            cart.items[productId] = {
+                item: imprimanta,
+                quantity: 1
+            };
+        }
+
+        cart.totalItems++;
+
+        req.session.save((err) => {
+            if (err) {
+                console.error("Eroare la salvarea sesiunii:", err);
+            }
+            res.redirect('/cart');
+        });
+
+
+    } catch (error) {
+        console.error("Eroare la adăugarea în coș:", error);
+        res.status(500).send('A apărut o eroare.');
+    }
+});
+
+app.post('/cart/remove/:id', (req, res) => {
+    try {
+        const productId = req.params.id;
+
+        if (req.session.cart && req.session.cart.items[productId]) {
+            
+            req.session.cart.totalItems -= req.session.cart.items[productId].quantity;
+            
+            delete req.session.cart.items[productId];
+
+            req.session.save((err) => {
+                if (err) {
+                    console.error("Eroare la salvarea sesiunii după ștergere:", err);
+                }
+                res.redirect('/cart'); 
+            });
+        } else {
+            res.redirect('/cart');
+        }
+
+    } catch (error) {
+        console.error("Eroare la ștergerea din coș:", error);
+        res.status(500).send('A apărut o eroare la ștergere.');
     }
 });
 
@@ -353,12 +418,18 @@ const adminRouter = AdminJSExpress.buildAuthenticatedRouter(
 );
 
 app.get('/cart', (req, res) => {
-    if (!req.session.user) {
-        return res.redirect('/login');
-    }
+    const cart = req.session.cart || { items: {}, totalItems: 0 };
+
+    let totalAmount = 0;
+    const cartItems = Object.values(cart.items);
+
+    cartItems.forEach(cartItem => {
+        totalAmount += cartItem.item.pret * cartItem.quantity;
+    });
 
     res.render('cart', { 
-        user: req.session.user 
+        items: cartItems, 
+        totalAmount: totalAmount
     });
 });
 

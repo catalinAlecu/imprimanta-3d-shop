@@ -16,14 +16,63 @@
         <h2 class="fw-bold mb-4">Cosul tau de cumparaturi</h2>
         
         <div class="card border-0 shadow-lg p-4 bg-dark text-white">
-            <p>Bine ai venit, <strong><%= user.username %></strong>!</p>
-            <p class="text-white-50">Coșul tău este momentan gol sau aici vor fi afișate imprimantele selectate.</p>
             
-            <div class="mt-4">
-                <a href="/models" class="btn btn-primary fw-bold">Vezi Imprimantele 3D</a>
-            </div>
+            <% if (items && items.length > 0) { %>
+                
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Produs</th>
+            <th>Preț Unitar</th>
+            <th>Cantitate</th>
+            <th>Subtotal</th>
+            <th>Acțiune</th> 
+        </tr>
+    </thead>
+    <tbody>
+        <% items.forEach(function(cartItem) { %>
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="<%= cartItem.item.imagine ? 'https://res.cloudinary.com/' + (typeof cloudName !== 'undefined' ? cloudName : 'numele_tau_cloud') + '/image/upload/w_50,h_50,c_fill/' + cartItem.item.imagine : '/images/default.jpg' %>" class="rounded me-3" alt="<%= cartItem.item.model %>" style="width: 50px; height: 50px; object-fit: cover;">
+                        <span><%= cartItem.item.marca %> <%= cartItem.item.model %></span>
+                    </div>
+                </td>
+                <td><%= cartItem.item.pret %> RON</td>
+                <td><%= cartItem.quantity %></td>
+                <td><strong><%= cartItem.item.pret * cartItem.quantity %> RON</strong></td>
+                
+                <td>
+                    <form action="/cart/remove/<%= cartItem.item._id %>" method="POST" class="m-0 p-0">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            Șterge
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+                </div>
+
+                <div class="d-flex justify-content-end align-items-center mt-4 border-top border-secondary pt-4">
+                    <h4 class="me-4 mb-0">Total: <span class="text-warning"><%= totalAmount %> RON</span></h4>
+                    <a href="/checkout" class="btn btn-success btn-lg fw-bold">Mergi la Checkout</a>
+                </div>
+
+            <% } else { %>
+                
+                <p class="text-white-50">Cosul tau este momentan gol. Aici vor fi afișate imprimantele selectate.</p>
+                <div class="mt-4">
+                    <a href="/models" class="btn btn-primary fw-bold">Vezi Imprimantele 3D</a>
+                </div>
+                
+            <% } %>
+
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,4 +1,3 @@
-// 1. Am schimbat 'require' cu 'import'
 import mongoose from 'mongoose';
 
 const schemaImprimanta = new mongoose.Schema({
@@ -7,11 +6,9 @@ const schemaImprimanta = new mongoose.Schema({
     required: [true, 'Marca imprimantei este obligatorie (ex: Creality, Prusa)'],
     trim: true
   },
-
-imagine: {
-    type: String
+  imagine: {
+    type: String // Aici se va salva URL-ul returnat de Cloudinary
   },
-
   model: {
     type: String,
     required: [true, 'Modelul este obligatoriu (ex: Ender 3 V2)'],
@@ -36,15 +33,19 @@ imagine: {
     type: String,
     required: [true, 'Descrierea este necesară pentru a detalia anunțul']
   },
-
   detaliiSuplimentare: {
-        type: String,
-        required: false
-    },
-
+    type: String,
+    required: false
+  },
   disponibil: {
     type: Boolean,
     default: true
+  },
+
+categorie: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: [true, 'Imprimanta trebuie să fie asociată unei categorii']
   }
 }, {
   timestamps: true 
