@@ -14,6 +14,7 @@ import { fileURLToPath } from 'url';
 import uploadFeature, { BaseProvider } from '@adminjs/upload';
 import { v2 as cloudinary } from 'cloudinary';
 import { sendFirstEmail } from './utils/email.js';
+import { Category } from './models/categorie.js';
 
 // Models from database
 import Imprimanta from './models/imprimanta.js';
@@ -303,7 +304,9 @@ const admin = new AdminJS({
                     }
                 })
             ]
-        }
+        },
+        Category,
+        User
     ],
     rootPath: '/admin',
 });

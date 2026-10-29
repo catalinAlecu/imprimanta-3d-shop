@@ -7,7 +7,7 @@ const schemaImprimanta = new mongoose.Schema({
     trim: true
   },
   imagine: {
-    type: String // Aici se va salva URL-ul returnat de Cloudinary
+    type: String 
   },
   model: {
     type: String,
