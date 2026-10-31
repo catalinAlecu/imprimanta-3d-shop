@@ -10,17 +10,23 @@
         </button>
             
         <div class="collapse navbar-collapse" id="meniuMobil">
-            <div class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center ms-auto my-3 my-lg-0">
+            <div class="d-flex flex-column flex-lg-row gap-3 align-items-center align-items-lg-center ms-auto my-3 my-lg-0">
                 
                 <% if (typeof hideButtons === 'undefined' || !hideButtons) { %>
-                    <a href="/cart" class="text-light text-decoration-none fw-bold px-2 d-flex align-items-center cart-animation position-relative">
-                        Cosul Meu<img src="/images/cart_icon.png" alt="Cart" width="30" height="30" class="me-2">
+                    <a href="/cart" class="text-light text-decoration-none fw-bold px-2 d-flex align-items-center cart-animation">
+                        <span class="me-2">Cosul Meu</span>
                         
-                        <% if (typeof cart !== 'undefined' && cart.totalItems > 0) { %>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-                                <%= cart.totalItems %>
-                            </span>
-                        <% } %>
+                        <div class="position-relative d-inline-block">
+                            <img src="/images/cart_icon.png" alt="Cart" width="30" height="30">
+                            
+                            <% if (cart && cart.totalItems > 0) { %>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                    <%= cart.totalItems %>
+                                    <span class="visually-hidden">produse în coș</span>
+                                </span>
+                            <% } %>
+                        </div>
+                        
                     </a>
                 <% } %>
 

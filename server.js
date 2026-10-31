@@ -40,6 +40,7 @@ app.use(session({
 
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
+    res.locals.cart = req.session.cart || { totalItems: 0, items: {} };
     next();
 });
 
@@ -52,7 +53,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-    res.render('register', { hideButtons: true });
+    res.render('register', { hideButtons: false });
 });
 
 app.get('/models', async (req, res) => {
@@ -138,7 +139,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.render('login', { hideButtons: true });
+    res.render('login', { hideButtons: false });
 });
 
 app.post('/api/login', async (req, res) => {
