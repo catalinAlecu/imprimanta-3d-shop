@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panou Gestionar — Comenzi Plasate</title>
+    <link rel="icon" type="image/png" href="/images/favicon1.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=<%= Date.now() %>">
+</head>
+<body class="bg-dark-theme text-white">
+
+    <%- include('partials/navbar') %>
+
+    <main class="container pt-5 mt-5 manager-main">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <div>
+                <h2 class="fw-bold mb-1">Panou Gestionar — Comenzi Plasate</h2>
+                <p class="manager-subtitle mb-0">
+                    Verifică produsele comandate, bifează comenzile pregătite și marchează-le ca expediate (Shipped).
+                </p>
+            </div>
+            <span class="badge bg-info text-dark fs-6 px-3 py-2">
+                Gestionar: <%= user ? user.username : '' %>
+            </span>
+        </div>
+
+        <%
+            const listaComenzi = Array.isArray(comenzi) ? comenzi : [];
+            const totalComenzi = listaComenzi.length;
+            const inAsteptare = listaComenzi.filter(c => c.status === 'In asteptare').length;
+            const verificate = listaComenzi.filter(c => c.status === 'Verificata').length;
+            const expediate = listaComenzi.filter(c => c.status === 'Shipped').length;
+        %>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card p-3">
+                    <div class="manager-kpi-label">Total comenzi</div>
+                    <div class="manager-kpi-value"><%= totalComenzi %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card p-3">
+                    <div class="manager-kpi-label">În așteptare</div>
+                    <div class="manager-kpi-value text-warning"><%= inAsteptare %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card p-3">
+                    <div class="manager-kpi-label">Verificate</div>
+                    <div class="manager-kpi-value text-info"><%= verificate %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card p-3">
+                    <div class="manager-kpi-label">Shipped</div>
+                    <div class="manager-kpi-value text-success"><%= expediate %></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista comenzilor -->
+        <% if (listaComenzi.length > 0) { %>
+            <div class="d-flex flex-column gap-3">
+                <% listaComenzi.forEach(function(comanda) { %>
+                    <article class="manager-order-card p-4 <%= comanda.status === 'Shipped' ? 'order-shipped' : '' %>">
+                        <div class="row g-3 align-items-center">
+
+                            <div class="col-lg-4">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="manager-order-id">
+                                        #<%= comanda._id.toString().slice(-6).toUpperCase() %>
+                                    </span>
+
+                                    <% if (comanda.status === 'Shipped') { %>
+                                        <span class="badge bg-success">Shipped</span>
+                                    <% } else if (comanda.status === 'Verificata') { %>
+                                        <span class="badge bg-info text-dark">Verificată</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark">În așteptare</span>
+                                    <% } %>
+                                </div>
+
+                                <div class="manager-meta">
+                                    <strong>Client:</strong>
+                                    <%= comanda.user ? comanda.user.username : 'Utilizator șters' %>
+                                    <% if (comanda.user && comanda.user.email) { %>
+                                        (<%= comanda.user.email %>)
+                                    <% } %>
+                                </div>
+
+                                <% if (comanda.phone) { %>
+                                    <div class="manager-meta">
+                                        <strong>Telefon:</strong> <%= comanda.phone %>
+                                    </div>
+                                <% } %>
+
+                                <% if (comanda.address) { %>
+                                    <div class="manager-meta">
+                                        <strong>Adresă:</strong>
+                                        <%= comanda.address.street %>, <%= comanda.address.city %>,
+                                        jud. <%= comanda.address.county %>, <%= comanda.address.zipCode %>
+                                    </div>
+                                <% } %>
+
+                                <% if (comanda.createdAt) { %>
+                                    <div class="manager-date mt-1">
+                                        Plasată la: <%= new Date(comanda.createdAt).toLocaleString('ro-RO') %>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="manager-section-label mb-1">Produse comandate:</div>
+                                <ul class="manager-items-list mb-0">
+                                    <% if (comanda.produse && comanda.produse.length > 0) { %>
+                                        <% comanda.produse.forEach(function(prod) { %>
+                                            <li>
+                                                <%= prod.marca %> <%= prod.model %>
+                                                — <strong><%= prod.cantitate %> buc.</strong>
+                                                (<%= prod.pretUnitar * prod.cantitate %> RON)
+                                            </li>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <li>Fără produse înregistrate</li>
+                                    <% } %>
+                                </ul>
+                            </div>
+
+                            <div class="col-lg-4 d-flex flex-column align-items-lg-end gap-2">
+                                <div class="manager-order-total">
+                                    Total: <span><%= comanda.total %> RON</span>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <form action="/gestionar/comenzi/<%= comanda._id %>/verifica" method="POST" class="m-0 p-0">
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm <%= comanda.verificata ? 'btn-info text-dark fw-semibold' : 'btn-outline-info' %>"
+                                            <%= comanda.status === 'Shipped' ? 'disabled' : '' %>
+                                        >
+                                            <%= comanda.verificata ? '✓ Verificată' : '☐ Bifează verificată' %>
+                                        </button>
+                                    </form>
+
+                                    <form action="/gestionar/comenzi/<%= comanda._id %>/shipped" method="POST" class="m-0 p-0">
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-success fw-semibold"
+                                            <%= comanda.status === 'Shipped' ? 'disabled' : '' %>
+                                        >
+                                            <%= comanda.status === 'Shipped' ? 'Expediată (Shipped)' : 'Marchează Shipped' %>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="manager-order-card p-5 text-center">
+                <h5 class="mb-2">Nu există încă nicio comandă plasată</h5>
+                <p class="manager-subtitle mb-0">
+                    Comenzile trimise de clienți din pagina de checkout vor apărea automat aici.
+                </p>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer', { fixedFooter: true }) %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -15,6 +15,7 @@ import uploadFeature, { BaseProvider } from '@adminjs/upload';
 import { v2 as cloudinary } from 'cloudinary';
 import { sendFirstEmail } from './utils/email.js';
 import { Category } from './models/categorie.js';
+import Comanda from './models/comanda.js';
 
 // Models from database
 import Imprimanta from './models/imprimanta.js';
@@ -487,6 +488,63 @@ app.post('/cart/update/:id/:action', (req, res) => {
 });
 
 app.use(admin.options.rootPath, adminRouter);
+
+function esteGestionar(req, res, next) {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+    if (req.session.user.role !== 'gestionar' && req.session.user.role !== 'admin') {
+        return res.status(403).send('Acces interzis. Doar gestionarul poate accesa această pagină.');
+    }
+    next();
+}
+
+app.get('/gestionar/comenzi', esteGestionar, async (req, res) => {
+    try {
+        const comenzi = await Comanda.find()
+            .populate('user', 'username email phone address')
+            .sort({ createdAt: -1 });
+
+        res.render('gestionar-comenzi', { comenzi });
+    } catch (error) {
+        console.error('Eroare la încărcarea comenzilor:', error);
+        res.status(500).send('Eroare la încărcarea panoului de comenzi.');
+    }
+});
+
+app.post('/gestionar/comenzi/:id/verifica', esteGestionar, async (req, res) => {
+    try {
+        const comanda = await Comanda.findById(req.params.id);
+        if (!comanda) return res.status(404).send('Comanda nu a fost găsită.');
+
+        if (comanda.status !== 'Shipped') {
+            comanda.verificata = !comanda.verificata;
+            comanda.status = comanda.verificata ? 'Verificata' : 'In asteptare';
+            await comanda.save();
+        }
+
+        res.redirect('/gestionar/comenzi');
+    } catch (error) {
+        console.error('Eroare la verificarea comenzii:', error);
+        res.status(500).send('Eroare la actualizarea comenzii.');
+    }
+});
+
+app.post('/gestionar/comenzi/:id/shipped', esteGestionar, async (req, res) => {
+    try {
+        const comanda = await Comanda.findById(req.params.id);
+        if (!comanda) return res.status(404).send('Comanda nu a fost găsită.');
+
+        comanda.verificata = true;
+        comanda.status = 'Shipped';
+        await comanda.save();
+
+        res.redirect('/gestionar/comenzi');
+    } catch (error) {
+        console.error('Eroare la marcarea ca Shipped:', error);
+        res.status(500).send('Eroare la actualizarea statusului.');
+    }
+});
 
 export default app;
 
