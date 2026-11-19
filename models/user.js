@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
-    username: {type: String, required: true, unique: true},
-    email: {type: String, required: true, unique: true},
-    password: {type: String, required: true},
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
 
     role: {
         type: String,
@@ -11,19 +11,18 @@ const UserSchema = new mongoose.Schema({
         default: 'user'
     },
 
-    phone: {type: String, required: true},
+    phone: { type: String, default: '' },
     address: {
-        street: {type: String, required: true},
-        city: {type: String, required: true},
-        county: {type: String, required: true},
-        zipCode: {type: String, required: true}
+        street: { type: String, default: '' },
+        city: { type: String, default: '' },
+        county: { type: String, default: '' },
+        zipCode: { type: String, default: '' }
     },
 
-    cart: { 
-        type: mongoose.Schema.Types.Mixed, 
-        default: [] 
+    cart: {
+        type: mongoose.Schema.Types.Mixed,
+        default: []
     }
-    
 }, {
     timestamps: true
 });

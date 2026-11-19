@@ -41,6 +41,7 @@ app.use(session({
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
     res.locals.cart = req.session.cart || { totalItems: 0, items: {} };
+    res.locals.cloudName = process.env.CLOUDINARY_CLOUD_NAME;
     next();
 });
 
@@ -160,10 +161,24 @@ app.post('/api/login', async (req, res) => {
 
         req.session.user = {
             id: user._id,
-            username: user.username
+            username: user.username,
+            role: user.role || 'user'
         };
 
-        res.status(200).json({ message: 'Logare reușită!' });
+        const redirectUrl = user.role === 'gestionar' ? '/gestionar/comenzi' : '/';
+
+        req.session.save((err) => {
+            if (err) {
+                console.error('Eroare la salvarea sesiunii la logare:', err);
+                return res.status(500).json({ message: 'Eroare la salvarea sesiunii.' });
+            }
+
+            res.status(200).json({
+                message: 'Logare reușită!',
+                role: req.session.user.role,
+                redirectUrl
+            });
+        });
 
     } catch (error) {
         console.error('Eroare la logare:', error);
@@ -433,8 +448,42 @@ app.get('/cart', (req, res) => {
 
     res.render('cart', { 
         items: cartItems, 
-        totalAmount: totalAmount
+        totalAmount: totalAmount,
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME
     });
+});
+
+app.post('/cart/update/:id/:action', (req, res) => {
+    try {
+        const { id: productId, action } = req.params;
+        const cart = req.session.cart;
+
+        if (cart && cart.items[productId]) {
+            if (action === 'increase') {
+                cart.items[productId].quantity++;
+                cart.totalItems++;
+            } else if (action === 'decrease') {
+                cart.items[productId].quantity--;
+                cart.totalItems = Math.max(0, cart.totalItems - 1);
+
+                if (cart.items[productId].quantity <= 0) {
+                    delete cart.items[productId];
+                }
+            }
+
+            return req.session.save((err) => {
+                if (err) {
+                    console.error('Eroare la actualizarea cantitatii în sesiune:', err);
+                }
+                res.redirect('/cart');
+            });
+        }
+
+        res.redirect('/cart');
+    } catch (error) {
+        console.error('Eroare la modificarea cantitatii:', error);
+        res.status(500).send('A aparut o eroare la actualizarea cosului.');
+    }
 });
 
 app.use(admin.options.rootPath, adminRouter);
