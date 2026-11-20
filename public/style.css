@@ -341,7 +341,7 @@ CSS
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* Card pentru coș gol */
+/* Cart pentru coș gol */
 .cart-empty-card {
     margin-top: 50px;
     max-width: 100%;
@@ -446,6 +446,142 @@ CSS
     border-right: 1px solid #32373d;
     padding: 0 6px;
     line-height: 32px;
+}
+
+.manager-filter-btn {
+    color: #f8f9fa;
+}
+
+.manager-toolbar {
+    margin-top: 50px;
+    max-width: 100%;
+    background-color: #16181a;
+    border: 1px solid #2b2f34;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.manager-order-card {
+    margin-top: 50px;
+    max-width: 100%;
+    background-color: #16181a;
+    border: 1px solid #2b2f34;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.manager-kpi-card {
+    margin-top: 50px;
+    max-width: 100%;
+    background-color: #16181a;
+    border: 1px solid #2b2f34;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.manager-kpi-label, 
+.manager-kpi-value.text-warning,
+.manager-kpi-value,
+.manager-kpi-value.text-info,
+.manager-kpi-value.text-success,
+.manager-kpi-value.manager-kpi-money {
+    text-align: center;
+}
+
+.nav-manager-link {
+    color: #f8f9fa;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.nav-manager-link:hover {
+    color: #0dcaf0;
+}
+
+/* Checkout */
+
+.checkout-main {
+    padding-bottom: 110px;
+}
+
+.checkout-subtitle {
+    color: #9aa0a6;
+    font-size: 0.9rem;
+}
+
+.checkout-card {
+    background-color: #16181a;
+    border: 1px solid #2b2f34;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.checkout-summary-card {
+    border-top: 3px solid #0dcaf0;
+}
+
+.checkout-success-card {
+    border-top: 3px solid #198754;
+}
+
+.checkout-section-title {
+    color: #ffffff;
+    border-bottom: 1px solid #2b2f34;
+    padding-bottom: 0.75rem;
+}
+
+.checkout-label {
+    color: #b0b6bc;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.checkout-input {
+    background-color: #0f1113;
+    border: 1px solid #323840;
+    color: #ffffff;
+}
+
+.checkout-input::placeholder {
+    color: #6c757d;
+}
+
+.checkout-input:focus {
+    background-color: #0f1113;
+    border-color: #0dcaf0;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+.checkout-payment-note,
+.checkout-confirm-box {
+    background-color: #1b1e21;
+    border: 1px solid #2e3338;
+    border-radius: 8px;
+}
+
+.checkout-summary-item {
+    border-bottom: 1px solid #262a2f;
+}
+
+.checkout-thumb {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 4px;
+    flex-shrink: 0;
+}
+
+.checkout-total-row {
+    border-top: 1px solid #2e3338;
+}
+
+.checkout-total-price {
+    color: #ffffff;
+    font-size: 1.35rem;
+    font-weight: 700;
 }
 
 /* Delimitare și total în sumar */

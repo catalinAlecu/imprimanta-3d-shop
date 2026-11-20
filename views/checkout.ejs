@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizare Comandă</title>
+    <link rel="icon" type="image/png" href="/images/favicon1.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=<%= Date.now() %>">
+</head>
+<body class="bg-dark-theme text-white">
+
+    <%- include('partials/navbar') %>
+
+    <main class="container pt-5 mt-5 checkout-main">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <div>
+                <h2 class="fw-bold mb-1">Finalizare Comandă</h2>
+                <p class="checkout-subtitle mb-0">
+                    Confirmă datele de livrare și produsele selectate înainte de a trimite comanda.
+                </p>
+            </div>
+            <a href="/cart" class="btn btn-sm btn-outline-light">← Înapoi la coș</a>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert alert-danger mb-4" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <div class="row g-4 align-items-start">
+            <!-- Coloana stângă: Formular date de livrare -->
+            <div class="col-lg-7">
+                <section class="checkout-card p-4">
+                    <h5 class="fw-bold mb-3 checkout-section-title">Date de livrare</h5>
+
+                    <form action="/checkout" method="POST">
+                        <div class="mb-3">
+                            <label for="phone" class="form-label checkout-label">Telefon contact *</label>
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                value="<%= formData.phone %>"
+                                class="form-control checkout-input"
+                                placeholder="ex: 0722 123 456"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="street" class="form-label checkout-label">Stradă, număr, bloc, apartament *</label>
+                            <input
+                                type="text"
+                                id="street"
+                                name="street"
+                                value="<%= formData.street %>"
+                                class="form-control checkout-input"
+                                placeholder="ex: Str. Revoluției nr. 12, bl. A2, ap. 5"
+                                required
+                            >
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="city" class="form-label checkout-label">Oraș / Localitate *</label>
+                                <input
+                                    type="text"
+                                    id="city"
+                                    name="city"
+                                    value="<%= formData.city %>"
+                                    class="form-control checkout-input"
+                                    placeholder="ex: Timișoara"
+                                    required
+                                >
+                            </div>
+                            <div class="col-md-6">
+                                <label for="county" class="form-label checkout-label">Județ *</label>
+                                <input
+                                    type="text"
+                                    id="county"
+                                    name="county"
+                                    value="<%= formData.county %>"
+                                    class="form-control checkout-input"
+                                    placeholder="ex: Timiș"
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="zipCode" class="form-label checkout-label">Cod poștal *</label>
+                            <input
+                                type="text"
+                                id="zipCode"
+                                name="zipCode"
+                                value="<%= formData.zipCode %>"
+                                class="form-control checkout-input"
+                                placeholder="ex: 300001"
+                                required
+                            >
+                        </div>
+
+                        <div class="checkout-payment-note p-3 mb-4">
+                            <div class="fw-semibold text-white mb-1">Metodă de plată: Ramburs la livrare</div>
+                            <div class="checkout-subtitle">
+                                Plata se face numerar sau cu cardul direct la curier în momentul primirii coletului.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-info text-dark fw-bold w-100 py-2">
+                            Plasează comanda (<%= totalAmount %> RON)
+                        </button>
+                    </form>
+                </section>
+            </div>
+
+            <!-- Coloana dreaptă: Sumar comandă -->
+            <div class="col-lg-5">
+                <aside class="checkout-card checkout-summary-card p-4">
+                    <h5 class="fw-bold mb-3 checkout-section-title">Sumar comandă</h5>
+
+                    <div class="d-flex flex-column gap-3 mb-3">
+                        <% items.forEach(function(cartItem) { %>
+                            <div class="checkout-summary-item d-flex align-items-center justify-content-between gap-3 pb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <% if (cartItem.item.imagine && cloudName) { %>
+                                        <img
+                                            src="https://res.cloudinary.com/<%= cloudName %>/image/upload/<%= cartItem.item.imagine %>"
+                                            alt="<%= cartItem.item.marca %> <%= cartItem.item.model %>"
+                                            class="checkout-thumb"
+                                        >
+                                    <% } %>
+                                    <div>
+                                        <div class="fw-semibold text-white">
+                                            <%= cartItem.item.marca %> <%= cartItem.item.model %>
+                                        </div>
+                                        <div class="checkout-subtitle">
+                                            <%= cartItem.quantity %> buc. × <%= cartItem.item.pret %> RON
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fw-bold text-info text-nowrap">
+                                    <%= cartItem.item.pret * cartItem.quantity %> RON
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 checkout-subtitle">
+                        <span>Transport curier</span>
+                        <span class="text-success fw-semibold">Gratuit</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 checkout-total-row">
+                        <span class="fw-bold fs-5">Total de plată</span>
+                        <span class="checkout-total-price"><%= totalAmount %> RON</span>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer', { fixedFooter: true }) %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

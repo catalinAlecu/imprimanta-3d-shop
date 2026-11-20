@@ -8,16 +8,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/style.css?v=<%= Date.now() %>">
 </head>
-<body class="bg-dark-theme text-white">
+<body class="bg-dark-theme text-white d-flex flex-column min-vh-100">
 
     <%- include('partials/navbar') %>
 
-    <main class="container pt-5 mt-5 manager-main">
+    <%
+        const listaComenzi = Array.isArray(comenzi) ? comenzi : [];
+        const stats = typeof statistici !== 'undefined' ? statistici : {
+            total: listaComenzi.length,
+            inAsteptare: 0,
+            verificate: 0,
+            expediate: 0,
+            valoareTotala: 0
+        };
+        const filtruCurent = typeof statusActiv !== 'undefined' ? statusActiv : 'toate';
+        const cautareCurenta = typeof termenCautare !== 'undefined' ? termenCautare : '';
+        const querySuffix = cautareCurenta ? '&q=' + encodeURIComponent(cautareCurenta) : '';
+    %>
+
+<main class="container pt-5 mt-5 manager-main flex-grow-1">
+            <!-- Antet panou -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
             <div>
                 <h2 class="fw-bold mb-1">Panou Gestionar — Comenzi Plasate</h2>
                 <p class="manager-subtitle mb-0">
-                    Verifică produsele comandate, bifează comenzile pregătite și marchează-le ca expediate (Shipped).
+                    Verifică produsele comandate, bifează comenzile pregătite și marchează-le ca livrate.
                 </p>
             </div>
             <span class="badge bg-info text-dark fs-6 px-3 py-2">
@@ -25,46 +40,90 @@
             </span>
         </div>
 
-        <%
-            const listaComenzi = Array.isArray(comenzi) ? comenzi : [];
-            const totalComenzi = listaComenzi.length;
-            const inAsteptare = listaComenzi.filter(c => c.status === 'In asteptare').length;
-            const verificate = listaComenzi.filter(c => c.status === 'Verificata').length;
-            const expediate = listaComenzi.filter(c => c.status === 'Shipped').length;
-        %>
-
+        <!-- Indicatori rapizi (KPI) -->
         <div class="row g-3 mb-4">
-            <div class="col-6 col-md-3">
-                <div class="manager-kpi-card p-3">
+            <div class="col-6 col-md-4 col-xl">
+                <div class="manager-kpi-card kpi-total p-3">
                     <div class="manager-kpi-label">Total comenzi</div>
-                    <div class="manager-kpi-value"><%= totalComenzi %></div>
+                    <div class="manager-kpi-value"><%= stats.total %></div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
-                <div class="manager-kpi-card p-3">
+            <div class="col-6 col-md-4 col-xl">
+                <div class="manager-kpi-card kpi-pending p-3">
                     <div class="manager-kpi-label">În așteptare</div>
-                    <div class="manager-kpi-value text-warning"><%= inAsteptare %></div>
+                    <div class="manager-kpi-value text-warning"><%= stats.inAsteptare %></div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
-                <div class="manager-kpi-card p-3">
+            <div class="col-6 col-md-4 col-xl">
+                <div class="manager-kpi-card kpi-verified p-3">
                     <div class="manager-kpi-label">Verificate</div>
-                    <div class="manager-kpi-value text-info"><%= verificate %></div>
+                    <div class="manager-kpi-value text-info"><%= stats.verificate %></div>
                 </div>
             </div>
-            <div class="col-6 col-md-3">
-                <div class="manager-kpi-card p-3">
-                    <div class="manager-kpi-label">Shipped</div>
-                    <div class="manager-kpi-value text-success"><%= expediate %></div>
+            <div class="col-6 col-md-6 col-xl">
+                <div class="manager-kpi-card kpi-shipped p-3">
+                    <div class="manager-kpi-label">Livrate</div>
+                    <div class="manager-kpi-value text-success"><%= stats.expediate %></div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-xl">
+                <div class="manager-kpi-card kpi-revenue p-3">
+                    <div class="manager-kpi-label">Valoare totală</div>
+                    <div class="manager-kpi-value manager-kpi-money"><%= stats.valoareTotala %> RON</div>
                 </div>
             </div>
         </div>
+
+        <!-- Bară de filtre după status + Căutare -->
+        <section class="manager-toolbar p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex flex-wrap gap-2">
+                <a
+                    href="/gestionar/comenzi?status=toate<%= querySuffix %>"
+                    class="btn btn-sm manager-filter-btn <%= filtruCurent === 'toate' ? 'active' : '' %>"
+                >
+                    Toate (<%= stats.total %>)
+                </a>
+                <a
+                    href="/gestionar/comenzi?status=In%20asteptare<%= querySuffix %>"
+                    class="btn btn-sm manager-filter-btn <%= filtruCurent === 'In asteptare' ? 'active' : '' %>"
+                >
+                    În așteptare (<%= stats.inAsteptare %>)
+                </a>
+                <a
+                    href="/gestionar/comenzi?status=Verificata<%= querySuffix %>"
+                    class="btn btn-sm manager-filter-btn <%= filtruCurent === 'Verificata' ? 'active' : '' %>"
+                >
+                    Verificate (<%= stats.verificate %>)
+                </a>
+                <a
+                    href="/gestionar/comenzi?status=Livrata<%= querySuffix %>"
+                    class="btn btn-sm manager-filter-btn <%= filtruCurent === 'Livrata' ? 'active' : '' %>"
+                >
+                    Livrate (<%= stats.expediate %>)
+                </a>
+            </div>
+
+            <form action="/gestionar/comenzi" method="GET" class="d-flex gap-2 manager-search-form">
+                <input type="hidden" name="status" value="<%= filtruCurent %>">
+                <input
+                    type="text"
+                    name="q"
+                    value="<%= cautareCurenta %>"
+                    class="form-control form-control-sm manager-search-input"
+                    placeholder="Caută ID, client, telefon, oraș..."
+                >
+                <button type="submit" class="btn btn-sm btn-info text-dark fw-semibold">Caută</button>
+                <% if (cautareCurenta || filtruCurent !== 'toate') { %>
+                    <a href="/gestionar/comenzi" class="btn btn-sm btn-outline-light">Resetează</a>
+                <% } %>
+            </form>
+        </section>
 
         <!-- Lista comenzilor -->
         <% if (listaComenzi.length > 0) { %>
             <div class="d-flex flex-column gap-3">
                 <% listaComenzi.forEach(function(comanda) { %>
-                    <article class="manager-order-card p-4 <%= comanda.status === 'Shipped' ? 'order-shipped' : '' %>">
+                    <article class="manager-order-card p-4 <%= comanda.status === 'Livrata' ? 'order-shipped' : '' %>">
                         <div class="row g-3 align-items-center">
 
                             <div class="col-lg-4">
@@ -73,8 +132,8 @@
                                         #<%= comanda._id.toString().slice(-6).toUpperCase() %>
                                     </span>
 
-                                    <% if (comanda.status === 'Shipped') { %>
-                                        <span class="badge bg-success">Shipped</span>
+                                    <% if (comanda.status === 'Livrata') { %>
+                                        <span class="badge bg-success">Livrată</span>
                                     <% } else if (comanda.status === 'Verificata') { %>
                                         <span class="badge bg-info text-dark">Verificată</span>
                                     <% } else { %>
@@ -138,7 +197,7 @@
                                         <button
                                             type="submit"
                                             class="btn btn-sm <%= comanda.verificata ? 'btn-info text-dark fw-semibold' : 'btn-outline-info' %>"
-                                            <%= comanda.status === 'Shipped' ? 'disabled' : '' %>
+                                            <%= comanda.status === 'Livrata' ? 'disabled' : '' %>
                                         >
                                             <%= comanda.verificata ? '✓ Verificată' : '☐ Bifează verificată' %>
                                         </button>
@@ -148,9 +207,9 @@
                                         <button
                                             type="submit"
                                             class="btn btn-sm btn-success fw-semibold"
-                                            <%= comanda.status === 'Shipped' ? 'disabled' : '' %>
+                                            <%= comanda.status === 'Livrata' ? 'disabled' : '' %>
                                         >
-                                            <%= comanda.status === 'Shipped' ? 'Expediată (Shipped)' : 'Marchează Shipped' %>
+                                            <%= comanda.status === 'Livrata' ? '✓ Livrată' : 'Marchează Livrată' %>
                                         </button>
                                     </form>
                                 </div>
@@ -162,15 +221,25 @@
             </div>
         <% } else { %>
             <div class="manager-order-card p-5 text-center">
-                <h5 class="mb-2">Nu există încă nicio comandă plasată</h5>
-                <p class="manager-subtitle mb-0">
-                    Comenzile trimise de clienți din pagina de checkout vor apărea automat aici.
-                </p>
+                <% if (cautareCurenta || filtruCurent !== 'toate') { %>
+                    <h5 class="mb-2">Nicio comandă nu corespunde filtrului curent</h5>
+                    <p class="manager-subtitle mb-3">
+                        Încearcă un alt termen de căutare sau revino la toate comenzile.
+                    </p>
+                    <a href="/gestionar/comenzi" class="btn btn-sm btn-info text-dark fw-semibold">
+                        Arată toate comenzile
+                    </a>
+                <% } else { %>
+                    <h5 class="mb-2">Nu există încă nicio comandă plasată</h5>
+                    <p class="manager-subtitle mb-0">
+                        Comenzile trimise de clienți din pagina de checkout vor apărea automat aici.
+                    </p>
+                <% } %>
             </div>
         <% } %>
     </main>
 
-    <%- include('partials/footer', { fixedFooter: true }) %>
+    <%- include('partials/footer', { fixedFooter: false }) %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

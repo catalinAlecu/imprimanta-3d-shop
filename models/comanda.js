@@ -6,18 +6,10 @@ const ComandaSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
-    produse: [
-        {
-            imprimantaId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Imprimanta'
-            },
-            marca: String,
-            model: String,
-            pretUnitar: Number,
-            cantitate: Number
-        }
-    ],
+    produse: {
+        type: mongoose.Schema.Types.Mixed,
+        default: []
+    },
     total: {
         type: Number,
         required: true
@@ -38,7 +30,7 @@ const ComandaSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['In asteptare', 'Verificata', 'Shipped'],
+        enum: ['In asteptare', 'Verificata', 'Livrata'],
         default: 'In asteptare'
     }
 }, {

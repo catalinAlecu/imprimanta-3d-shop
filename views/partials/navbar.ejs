@@ -12,7 +12,11 @@
         <div class="collapse navbar-collapse" id="meniuMobil">
             <div class="d-flex flex-column flex-lg-row gap-3 align-items-center align-items-lg-center ms-auto my-3 my-lg-0">
                 
-                <% if (typeof hideButtons === 'undefined' || !hideButtons) { %>
+                    <% if (user && (user.role === 'gestionar' || user.role === 'admin')) { %>
+                        <a href="/gestionar/comenzi" class="nav-link nav-manager-link me-3">
+                            Comenzi Plasate
+                        </a>
+                    <% } else { %>                                           
                     <a href="/cart" class="text-light text-decoration-none fw-bold px-2 d-flex align-items-center cart-animation">
                         <span class="me-2">Cosul Meu</span>
                         
@@ -27,8 +31,8 @@
                             <% } %>
                         </div>
                         
-                    </a>
-                <% } %>
+                    </a>    
+                    <% } %>
 
                 <% if (typeof user !== 'undefined' && user) { %>
 
