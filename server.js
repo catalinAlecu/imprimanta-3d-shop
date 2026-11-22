@@ -643,12 +643,12 @@ app.post('/gestionar/comenzi/mass-action', esteGestionar, express.urlencoded({ e
 
         if (action === 'in_livrare') {
             await Comanda.updateMany(
-                { _id: { $in: orderIds }, status: { $nin: ['In curs de livrare', 'Livrata'] } },
+                { _id: { $in: orderIds }, status: {$nin: ['In curs de livrare', 'Livrata'] } },
                 { $set: { verificata: true, status: 'In curs de livrare' } }
             );
         } else if (action === 'livrata') {
             await Comanda.updateMany(
-                { _id: { $in: orderIds }, status: { $ne: 'Livrata' } },
+                { _id: { $in: orderIds }, status: {$ne: 'Livrata' } },
                 { $set: { verificata: true, status: 'Livrata' } }
             );
         }
@@ -923,6 +923,62 @@ app.get('/comanda-confirmata/:id', async (req, res) => {
     } catch (error) {
         console.error('Eroare la afișarea confirmării comenzii:', error);
         res.status(500).send('Nu am putut încărca detaliile comenzii.');
+    }
+});
+
+app.get('/comenzile-mele', async (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.redirect('/login');
+        }
+
+        const comenzi = await Comanda.find({ user: req.session.user.id })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        const statistici = {
+            total: comenzi.length,
+            inAsteptare: comenzi.filter(c => c.status === 'In asteptare').length,
+            inCursDeLivrare: comenzi.filter(c => c.status === 'In curs de livrare').length,
+            livrate: comenzi.filter(c => c.status === 'Livrata').length
+        };
+
+        res.render('comenzile-mele', {
+            comenzi,
+            statistici
+        });
+    } catch (error) {
+        console.error('Eroare la încărcarea comenzilor utilizatorului:', error);
+        res.status(500).send('Nu am putut încărca comenzile tale.');
+    }
+});
+
+app.post('/comenzile-mele/:id/confirmare-livrare', async (req, res) => {
+    try {
+        if (!req.session.user) {
+            return res.redirect('/login');
+        }
+
+        const comanda = await Comanda.findById(req.params.id);
+        if (!comanda) {
+            return res.status(404).send('Comanda nu a fost găsită.');
+        }
+
+        if (comanda.user.toString() !== req.session.user.id.toString()) {
+            return res.status(403).send('Acces interzis. Nu poți modifica comanda altui utilizator.');
+        }
+
+        if (comanda.status === 'In curs de livrare') {
+            comanda.verificata = true;
+            comanda.confirmedByClient = true;
+            comanda.status = 'Livrata';
+            await comanda.save();
+        }
+
+        res.redirect('/comenzile-mele');
+    } catch (error) {
+        console.error('Eroare la confirmarea livrării de către client:', error);
+        res.status(500).send('Eroare la actualizarea statusului comenzii.');
     }
 });
 

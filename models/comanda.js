@@ -28,7 +28,13 @@ const ComandaSchema = new mongoose.Schema({
         type: String,
         enum: ['In asteptare', 'In curs de livrare', 'Livrata'],
         default: 'In asteptare'
+    },
+
+    confirmedByClient: {
+        type: Boolean,
+        default: false
     }
+    
 }, {
     timestamps: true
 });

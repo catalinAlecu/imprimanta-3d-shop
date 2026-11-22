@@ -265,6 +265,10 @@
                                         </button>
                                     </form>
                                 </div>
+
+                                <% if (comanda.status === 'Livrata' && comanda.confirmedByClient) { %>
+                                    <small class="text-info">✓ Confirmată de client</small>
+                                <% } %>
                             </div>
 
                         </div>

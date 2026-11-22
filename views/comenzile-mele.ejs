@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comenzile mele</title>
+    <link rel="icon" type="image/png" href="/images/favicon1.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=<%= Date.now() %>">
+</head>
+<body class="bg-dark-theme text-white d-flex flex-column min-vh-100">
+
+    <%- include('partials/navbar') %>
+
+    <%
+        const listaComenzi = Array.isArray(comenzi) ? comenzi : [];
+        const stats = typeof statistici !== 'undefined' ? statistici : {
+            total: listaComenzi.length,
+            inAsteptare: 0,
+            inCursDeLivrare: 0,
+            livrate: 0
+        };
+    %>
+
+    <main class="container pt-5 mt-5 manager-main flex-grow-1">
+        <!-- Antet -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <div>
+                <h2 class="fw-bold mb-1">Comenzile mele</h2>
+                <p class="manager-subtitle mb-0">
+                    Urmărește statusul livrărilor tale și confirmă primirea coletului când ajunge la tine.
+                </p>
+            </div>
+            <a href="/models" class="btn btn-sm btn-outline-info fw-semibold">
+                Continuă cumpărăturile
+            </a>
+        </div>
+
+        <!-- Indicatori rapizi -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-total p-3">
+                    <div class="manager-kpi-label">Total comenzi</div>
+                    <div class="manager-kpi-value"><%= stats.total %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-pending p-3">
+                    <div class="manager-kpi-label">În așteptare</div>
+                    <div class="manager-kpi-value text-warning"><%= stats.inAsteptare %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-verified p-3">
+                    <div class="manager-kpi-label">În curs de livrare</div>
+                    <div class="manager-kpi-value text-info"><%= stats.inCursDeLivrare %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-shipped p-3">
+                    <div class="manager-kpi-label">Livrate</div>
+                    <div class="manager-kpi-value text-success"><%= stats.livrate %></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista comenzilor clientului -->
+        <% if (listaComenzi.length > 0) { %>
+            <div class="d-flex flex-column gap-3">
+                <% listaComenzi.forEach(function(comanda) { %>
+                    <%
+                        const pasCurent = comanda.status === 'Livrata' ? 3 : (comanda.status === 'In curs de livrare' ? 2 : 1);
+                    %>
+                    <article class="manager-order-card p-4 <%= comanda.status === 'Livrata' ? 'order-shipped' : (comanda.status === 'In curs de livrare' ? 'order-in-transit' : '') %>">
+                        <div class="row g-3 align-items-center">
+
+                            <!-- Coloana 1: ID, Status, Dată, Adresă -->
+                            <div class="col-lg-4">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="manager-order-id">
+                                        #<%= comanda._id.toString().slice(-6).toUpperCase() %>
+                                    </span>
+
+                                    <% if (comanda.status === 'Livrata') { %>
+                                        <span class="badge bg-success">Livrată</span>
+                                    <% } else if (comanda.status === 'In curs de livrare') { %>
+                                        <span class="badge bg-info text-dark">În curs de livrare</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning text-dark">În așteptare</span>
+                                    <% } %>
+                                </div>
+
+                                <% if (comanda.createdAt) { %>
+                                    <div class="manager-date mb-2">
+                                        Plasată la: <%= new Date(comanda.createdAt).toLocaleString('ro-RO') %>
+                                    </div>
+                                <% } %>
+
+                                <% if (comanda.address) { %>
+                                    <div class="manager-meta">
+                                        <strong>Livrare la:</strong>
+                                        <%= comanda.address.street %>, <%= comanda.address.city %>,
+                                        jud. <%= comanda.address.county %>
+                                    </div>
+                                <% } %>
+
+                                <% if (comanda.phone) { %>
+                                    <div class="manager-meta">
+                                        <strong>Telefon:</strong> <%= comanda.phone %>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <!-- Coloana 2: Produse -->
+                            <div class="col-lg-4">
+                                <div class="manager-section-label mb-1">Produse comandate:</div>
+                                <ul class="manager-items-list mb-0">
+                                    <% if (comanda.produse && comanda.produse.length > 0) { %>
+                                        <% comanda.produse.forEach(function(prod) { %>
+                                            <li>
+                                                <%= prod.marca %> <%= prod.model %>
+                                                — <strong><%= prod.cantitate %> buc.</strong>
+                                                (<%= prod.pretUnitar * prod.cantitate %> RON)
+                                            </li>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <li>Fără produse înregistrate</li>
+                                    <% } %>
+                                </ul>
+                            </div>
+
+                            <!-- Coloana 3: Total & Buton confirmare primire -->
+                            <div class="col-lg-4 d-flex flex-column align-items-lg-end gap-2">
+                                <div class="manager-order-total">
+                                    Total: <span><%= comanda.total %> RON</span>
+                                </div>
+
+                                <% if (comanda.status === 'In curs de livrare') { %>
+                                    <form action="/comenzile-mele/<%= comanda._id %>/confirmare-livrare" method="POST" class="m-0 p-0">
+                                        <button type="submit" class="btn btn-sm btn-success fw-semibold">
+                                            ✓ Confirmă că a ajuns comanda
+                                        </button>
+                                    </form>
+                                    <small class="text-info">Coletul este pe drum spre tine</small>
+                                <% } else if (comanda.status === 'Livrata') { %>
+                                    <button type="button" class="btn btn-sm btn-success fw-semibold" disabled>
+                                        ✓ Comandă livrată
+                                    </button>
+                                    <% if (comanda.confirmedByClient) { %>
+                                        <small class="text-secondary">Ai confirmat primirea</small>
+                                    <% } %>
+                                <% } else { %>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold" disabled>
+                                        Se pregătește comanda...
+                                    </button>
+                                    <small class="text-secondary">Vei putea confirma primirea după expediere</small>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Bară de progres în 3 pași -->
+                        <div class="order-steps mt-3 pt-3">
+                            <div class="order-step <%= pasCurent >= 1 ? 'done' : '' %>">
+                                <span class="order-step-dot"></span>
+                                <span>În așteptare</span>
+                            </div>
+                            <div class="order-step-line <%= pasCurent >= 2 ? 'done' : '' %>"></div>
+                            <div class="order-step <%= pasCurent >= 2 ? 'done' : '' %>">
+                                <span class="order-step-dot"></span>
+                                <span>În curs de livrare</span>
+                            </div>
+                            <div class="order-step-line <%= pasCurent >= 3 ? 'done' : '' %>"></div>
+                            <div class="order-step <%= pasCurent >= 3 ? 'done' : '' %>">
+                                <span class="order-step-dot"></span>
+                                <span>Livrată</span>
+                            </div>
+                        </div>
+                    </article>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="manager-order-card p-5 text-center">
+                <h5 class="mb-2">Nu ai plasat încă nicio comandă</h5>
+                <p class="manager-subtitle mb-3">
+                    Explorează imprimantele noastre 3D și plasează prima ta comandă.
+                </p>
+                <a href="/models" class="btn btn-sm btn-info text-dark fw-semibold">
+                    Vezi imprimantele 3D
+                </a>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer', { fixedFooter: false }) %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
