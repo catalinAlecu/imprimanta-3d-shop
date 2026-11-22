@@ -553,8 +553,8 @@ app.get('/gestionar/comenzi', esteGestionar, async (req, res) => {
         const statistici = {
             total: toateComenzile.length,
             inAsteptare: toateComenzile.filter(c => c.status === 'In asteptare').length,
-            verificate: toateComenzile.filter(c => c.status === 'Verificata').length,
-            expediate: toateComenzile.filter(c => c.status === 'Livrata').length,
+            inCursDeLivrare: toateComenzile.filter(c => c.status === 'In curs de livrare').length,
+            livrate: toateComenzile.filter(c => c.status === 'Livrata').length,
             valoareTotala: toateComenzile.reduce((suma, c) => suma + (c.total || 0), 0)
         };
 
@@ -595,25 +595,25 @@ app.get('/gestionar/comenzi', esteGestionar, async (req, res) => {
     }
 });
 
-app.post('/gestionar/comenzi/:id/verifica', esteGestionar, async (req, res) => {
+app.post('/gestionar/comenzi/:id/in-livrare', esteGestionar, async (req, res) => {
     try {
         const comanda = await Comanda.findById(req.params.id);
         if (!comanda) return res.status(404).send('Comanda nu a fost găsită.');
 
         if (comanda.status !== 'Livrata') {
-            comanda.verificata = !comanda.verificata;
-            comanda.status = comanda.verificata ? 'Verificata' : 'In asteptare';
+            comanda.verificata = true;
+            comanda.status = 'In curs de livrare';
             await comanda.save();
         }
 
         res.redirect('/gestionar/comenzi');
     } catch (error) {
-        console.error('Eroare la verificarea comenzii:', error);
-        res.status(500).send('Eroare la actualizarea comenzii.');
+        console.error('Eroare la marcarea ca În curs de livrare:', error);
+        res.status(500).send('Eroare la actualizarea statusului.');
     }
 });
 
-app.post('/gestionar/comenzi/:id/shipped', esteGestionar, async (req, res) => {
+app.post('/gestionar/comenzi/:id/livrata', esteGestionar, async (req, res) => {
     try {
         const comanda = await Comanda.findById(req.params.id);
         if (!comanda) return res.status(404).send('Comanda nu a fost găsită.');
@@ -626,8 +626,126 @@ app.post('/gestionar/comenzi/:id/shipped', esteGestionar, async (req, res) => {
 
         res.redirect('/gestionar/comenzi');
     } catch (error) {
-        console.error('Eroare la marcarea ca Livrata:', error);
+        console.error('Eroare la marcarea ca Livrată:', error);
         res.status(500).send('Eroare la actualizarea statusului.');
+    }
+});
+
+app.post('/gestionar/comenzi/mass-action', esteGestionar, express.urlencoded({ extended: true }), async (req, res) => {
+    try {
+        const { action } = req.body;
+        const rawIds = req.body.orderIds;
+        const orderIds = Array.isArray(rawIds) ? rawIds : (rawIds ? [rawIds] : []);
+
+        if (orderIds.length === 0) {
+            return res.redirect('/gestionar/comenzi');
+        }
+
+        if (action === 'in_livrare') {
+            await Comanda.updateMany(
+                { _id: { $in: orderIds }, status: { $nin: ['In curs de livrare', 'Livrata'] } },
+                { $set: { verificata: true, status: 'In curs de livrare' } }
+            );
+        } else if (action === 'livrata') {
+            await Comanda.updateMany(
+                { _id: { $in: orderIds }, status: { $ne: 'Livrata' } },
+                { $set: { verificata: true, status: 'Livrata' } }
+            );
+        }
+
+        res.redirect('/gestionar/comenzi');
+    } catch (error) {
+        console.error('Eroare la mass action comenzi:', error);
+        res.status(500).send('Eroare la actualizarea în masă a comenzilor.');
+    }
+});
+
+app.get('/gestionar/stocuri', esteGestionar, async (req, res) => {
+    try {
+        const categorieSelectata = (req.query.categorie || 'toate').trim();
+        const termenCautare = (req.query.q || '').trim();
+
+        const [categorii, toateImprimantele, comenziInLivrare] = await Promise.all([
+            Category.find().sort({ name: 1 }).lean(),
+            Imprimanta.find().populate('categorie', 'name').sort({ marca: 1, model: 1 }).lean(),
+            Comanda.find({ status: 'In curs de livrare' }).lean()
+        ]);
+
+        const inLivrareMap = {};
+        comenziInLivrare.forEach(comanda => {
+            if (Array.isArray(comanda.produse)) {
+                comanda.produse.forEach(prod => {
+                    if (!prod.imprimantaId) return;
+                    const idStr = prod.imprimantaId.toString();
+                    inLivrareMap[idStr] = (inLivrareMap[idStr] || 0) + (Number(prod.cantitate) || 0);
+                });
+            }
+        });
+
+        const produseComplete = toateImprimantele.map(imp => {
+            const idStr = imp._id.toString();
+            const stocActual = typeof imp.stoc === 'number' ? imp.stoc : 5;
+            const inCursDeLivrare = inLivrareMap[idStr] || 0;
+
+            return {
+                ...imp,
+                stocActual,
+                inCursDeLivrare
+            };
+        });
+
+        const statistici = {
+            totalProduse: produseComplete.length,
+            totalPeStoc: produseComplete.reduce((suma, p) => suma + p.stocActual, 0),
+            totalInLivrare: produseComplete.reduce((suma, p) => suma + p.inCursDeLivrare, 0),
+            stocCritic: produseComplete.filter(p => p.stocActual <= 2).length
+        };
+
+        let produseFiltrate = produseComplete;
+
+        if (categorieSelectata !== 'toate') {
+            produseFiltrate = produseFiltrate.filter(
+                p => p.categorie && p.categorie._id.toString() === categorieSelectata
+            );
+        }
+
+        if (termenCautare) {
+            const q = termenCautare.toLowerCase();
+            produseFiltrate = produseFiltrate.filter(p => {
+                const marca = (p.marca || '').toLowerCase();
+                const model = (p.model || '').toLowerCase();
+                const tehnologie = (p.tehnologie || '').toLowerCase();
+                const numeCat = (p.categorie?.name || '').toLowerCase();
+                return marca.includes(q) || model.includes(q) || tehnologie.includes(q) || numeCat.includes(q);
+            });
+        }
+
+        res.render('gestionar-stocuri', {
+            produse: produseFiltrate,
+            categorii,
+            statistici,
+            categorieSelectata,
+            termenCautare
+        });
+    } catch (error) {
+        console.error('Eroare la încărcarea paginii de stocuri:', error);
+        res.status(500).send('Eroare la încărcarea stocurilor.');
+    }
+});
+
+app.post('/gestionar/stocuri/:id/update', esteGestionar, express.urlencoded({ extended: true }), async (req, res) => {
+    try {
+        const stocNou = Math.max(0, parseInt(req.body.stoc, 10) || 0);
+
+        await Imprimanta.findByIdAndUpdate(req.params.id, {
+            stoc: stocNou,
+            disponibil: stocNou > 0
+        });
+
+        res.redirect('/gestionar/stocuri');
+    } catch (error) {
+        console.error('Eroare la actualizarea stocului:', error);
+        res.status(500).send('Eroare la actualizarea stocului.');
     }
 });
 
@@ -746,6 +864,18 @@ app.post('/checkout', express.urlencoded({ extended: true }), async (req, res) =
         });
 
         await comandaNoua.save();
+
+        for (const prod of produseComanda) {
+            const impDoc = await Imprimanta.findById(prod.imprimantaId);
+            if (impDoc) {
+                const stocCurent = typeof impDoc.stoc === 'number' ? impDoc.stoc : 5;
+                impDoc.stoc = Math.max(0, stocCurent - prod.cantitate);
+                if (impDoc.stoc === 0) {
+                    impDoc.disponibil = false;
+                }
+                await impDoc.save();
+            }
+        }
 
         await User.findByIdAndUpdate(req.session.user.id, {
             phone: formData.phone,

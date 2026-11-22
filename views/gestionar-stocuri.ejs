@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panou Gestionar — Stocuri</title>
+    <link rel="icon" type="image/png" href="/images/favicon1.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=<%= Date.now() %>">
+</head>
+<body class="bg-dark-theme text-white d-flex flex-column min-vh-100">
+
+    <%- include('partials/navbar') %>
+
+    <%
+        const listaProduse = Array.isArray(produse) ? produse : [];
+        const listaCategorii = Array.isArray(categorii) ? categorii : [];
+        const stats = typeof statistici !== 'undefined' ? statistici : {
+            totalProduse: 0,
+            totalPeStoc: 0,
+            totalInLivrare: 0,
+            stocCritic: 0
+        };
+        const catCurenta = typeof categorieSelectata !== 'undefined' ? categorieSelectata : 'toate';
+        const cautareCurenta = typeof termenCautare !== 'undefined' ? termenCautare : '';
+        const querySuffix = cautareCurenta ? '&q=' + encodeURIComponent(cautareCurenta) : '';
+    %>
+
+    <main class="container pt-5 mt-5 manager-main flex-grow-1">
+        <!-- Antet -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+            <div>
+                <h2 class="fw-bold mb-1">Panou Gestionar — Gestiune Stocuri</h2>
+                <p class="manager-subtitle mb-0">
+                    Vizualizează stocul disponibil, produsele aflate în curs de livrare și actualizează rapid cantitățile.
+                </p>
+            </div>
+            <span class="badge bg-info text-dark fs-6 px-3 py-2">
+                Gestionar: <%= user ? user.username : '' %>
+            </span>
+        </div>
+
+        <!-- KPI Stocuri -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-total p-3">
+                    <div class="manager-kpi-label">Total modele</div>
+                    <div class="manager-kpi-value"><%= stats.totalProduse %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-shipped p-3">
+                    <div class="manager-kpi-label">Bucăți pe stoc</div>
+                    <div class="manager-kpi-value text-success"><%= stats.totalPeStoc %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-verified p-3">
+                    <div class="manager-kpi-label">În curs de livrare</div>
+                    <div class="manager-kpi-value text-info"><%= stats.totalInLivrare %></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="manager-kpi-card kpi-pending p-3">
+                    <div class="manager-kpi-label">Stoc critic (&le; 2)</div>
+                    <div class="manager-kpi-value text-warning"><%= stats.stocCritic %></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtrare după categorie + Căutare -->
+        <section class="manager-toolbar p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex flex-wrap gap-2">
+                <a
+                    href="/gestionar/stocuri?categorie=toate<%= querySuffix %>"
+                    class="btn btn-sm manager-filter-btn <%= catCurenta === 'toate' ? 'active' : '' %>"
+                >
+                    Toate categoriile
+                </a>
+                <% listaCategorii.forEach(function(cat) { %>
+                    <a
+                        href="/gestionar/stocuri?categorie=<%= cat._id %><%= querySuffix %>"
+                        class="btn btn-sm manager-filter-btn <%= catCurenta === cat._id.toString() ? 'active' : '' %>"
+                    >
+                        <%= cat.name %>
+                    </a>
+                <% }) %>
+            </div>
+
+            <form action="/gestionar/stocuri" method="GET" class="d-flex gap-2 manager-search-form">
+                <input type="hidden" name="categorie" value="<%= catCurenta %>">
+                <input
+                    type="text"
+                    name="q"
+                    value="<%= cautareCurenta %>"
+                    class="form-control form-control-sm manager-search-input"
+                    placeholder="Caută marcă, model, categorie..."
+                >
+                <button type="submit" class="btn btn-sm btn-info text-dark fw-semibold">Caută</button>
+                <% if (cautareCurenta || catCurenta !== 'toate') { %>
+                    <a href="/gestionar/stocuri" class="btn btn-sm btn-outline-light">Resetează</a>
+                <% } %>
+            </form>
+        </section>
+
+        <!-- Tabel Stocuri -->
+        <% if (listaProduse.length > 0) { %>
+            <div class="manager-order-card p-3">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0 stock-table">
+                        <thead>
+                            <tr>
+                                <th>Produs</th>
+                                <th>Categorie</th>
+                                <th>Preț</th>
+                                <th class="text-center">Pe stoc</th>
+                                <th class="text-center">În curs de livrare</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-end">Actualizează stoc</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% listaProduse.forEach(function(prod) { %>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img
+                                                src="<%= prod.imagine ? 'https://res.cloudinary.com/' + cloudName + '/image/upload/' + prod.imagine : '/images/default.jpg' %>"
+                                                alt="<%= prod.model %>"
+                                                class="stock-thumb"
+                                            >
+                                            <div>
+                                                <div class="fw-bold text-white"><%= prod.marca %> <%= prod.model %></div>
+                                                <small class="text-secondary"><%= prod.tehnologie %> &middot; <%= prod.stare %></small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-dark text-info border border-info px-2 py-1">
+                                            <%= prod.categorie ? prod.categorie.name : 'Fără categorie' %>
+                                        </span>
+                                    </td>
+                                    <td class="fw-semibold"><%= prod.pret %> RON</td>
+                                    <td class="text-center">
+                                        <span class="fs-5 fw-bold <%= prod.stocActual === 0 ? 'text-danger' : (prod.stocActual <= 2 ? 'text-warning' : 'text-success') %>">
+                                            <%= prod.stocActual %>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <% if (prod.inCursDeLivrare > 0) { %>
+                                            <span class="badge bg-info text-dark fs-6 px-3 py-1">
+                                                <%= prod.inCursDeLivrare %> buc.
+                                            </span>
+                                        <% } else { %>
+                                            <span class="text-secondary">0</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-center">
+                                        <% if (prod.stocActual === 0) { %>
+                                            <span class="badge bg-danger">Epuizat</span>
+                                        <% } else if (prod.stocActual <= 2) { %>
+                                            <span class="badge bg-warning text-dark">Stoc redus</span>
+                                        <% } else { %>
+                                            <span class="badge bg-success">Disponibil</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="text-end">
+                                        <form action="/gestionar/stocuri/<%= prod._id %>/update" method="POST" class="d-inline-flex align-items-center gap-2 m-0">
+                                            <input
+                                                type="number"
+                                                name="stoc"
+                                                min="0"
+                                                value="<%= prod.stocActual %>"
+                                                class="form-control form-control-sm stock-qty-input"
+                                            >
+                                            <button type="submit" class="btn btn-sm btn-outline-info fw-semibold">
+                                                Salvează
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="manager-order-card p-5 text-center">
+                <h5 class="mb-2">Nu s-au găsit produse pentru filtrul selectat</h5>
+                <p class="manager-subtitle mb-3">Încearcă altă categorie sau resetează căutarea.</p>
+                <a href="/gestionar/stocuri" class="btn btn-sm btn-info text-dark fw-semibold">
+                    Arată toate produsele
+                </a>
+            </div>
+        <% } %>
+    </main>
+
+    <%- include('partials/footer', { fixedFooter: false }) %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

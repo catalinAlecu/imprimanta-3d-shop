@@ -17,7 +17,8 @@
         const stats = typeof statistici !== 'undefined' ? statistici : {
             total: listaComenzi.length,
             inAsteptare: 0,
-            expediate: 0,
+            inCursDeLivrare: 0,
+            livrate: 0,
             valoareTotala: 0
         };
         const filtruCurent = typeof statusActiv !== 'undefined' ? statusActiv : 'toate';
@@ -25,13 +26,13 @@
         const querySuffix = cautareCurenta ? '&q=' + encodeURIComponent(cautareCurenta) : '';
     %>
 
-<main class="container pt-5 mt-5 manager-main flex-grow-1">
-            <!-- Antet panou -->
+    <main class="container pt-5 mt-5 manager-main flex-grow-1">
+        <!-- Antet panou -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
             <div>
                 <h2 class="fw-bold mb-1">Panou Gestionar — Comenzi Plasate</h2>
                 <p class="manager-subtitle mb-0">
-                    Verifică produsele comandate, bifează comenzile pregătite și marchează-le ca livrate.
+                    Predă comenzile curierului și marchează-le ca livrate individual sau prin acțiuni în masă.
                 </p>
             </div>
             <span class="badge bg-info text-dark fs-6 px-3 py-2">
@@ -53,10 +54,16 @@
                     <div class="manager-kpi-value text-warning"><%= stats.inAsteptare %></div>
                 </div>
             </div>
+            <div class="col-6 col-md-4 col-xl">
+                <div class="manager-kpi-card kpi-verified p-3">
+                    <div class="manager-kpi-label">În curs de livrare</div>
+                    <div class="manager-kpi-value text-info"><%= stats.inCursDeLivrare %></div>
+                </div>
+            </div>
             <div class="col-6 col-md-6 col-xl">
                 <div class="manager-kpi-card kpi-shipped p-3">
                     <div class="manager-kpi-label">Livrate</div>
-                    <div class="manager-kpi-value text-success"><%= stats.expediate %></div>
+                    <div class="manager-kpi-value text-success"><%= stats.livrate %></div>
                 </div>
             </div>
             <div class="col-12 col-md-6 col-xl">
@@ -68,7 +75,7 @@
         </div>
 
         <!-- Bară de filtre după status + Căutare -->
-        <section class="manager-toolbar p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <section class="manager-toolbar p-3 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div class="d-flex flex-wrap gap-2">
                 <a
                     href="/gestionar/comenzi?status=toate<%= querySuffix %>"
@@ -83,10 +90,16 @@
                     În așteptare (<%= stats.inAsteptare %>)
                 </a>
                 <a
+                    href="/gestionar/comenzi?status=In%20curs%20de%20livrare<%= querySuffix %>"
+                    class="btn btn-sm manager-filter-btn <%= filtruCurent === 'In curs de livrare' ? 'active' : '' %>"
+                >
+                    În curs de livrare (<%= stats.inCursDeLivrare %>)
+                </a>
+                <a
                     href="/gestionar/comenzi?status=Livrata<%= querySuffix %>"
                     class="btn btn-sm manager-filter-btn <%= filtruCurent === 'Livrata' ? 'active' : '' %>"
                 >
-                    Livrate (<%= stats.expediate %>)
+                    Livrate (<%= stats.livrate %>)
                 </a>
             </div>
 
@@ -106,21 +119,73 @@
             </form>
         </section>
 
+        <!-- Bară Mass Action -->
+        <% if (listaComenzi.length > 0) { %>
+            <section class="manager-toolbar mass-action-bar p-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-check m-0">
+                        <input
+                            type="checkbox"
+                            id="selectAllOrders"
+                            class="form-check-input manager-checkbox"
+                        >
+                        <label class="form-check-label text-white fw-semibold" for="selectAllOrders">
+                            Selectează toate (nelivrate)
+                        </label>
+                    </div>
+                    <span id="selectedCountBadge" class="badge bg-secondary">0 selectate</span>
+                </div>
+
+                <form id="massActionForm" action="/gestionar/comenzi/mass-action" method="POST" class="d-flex flex-wrap gap-2 m-0">
+                    <button
+                        type="submit"
+                        name="action"
+                        value="in_livrare"
+                        class="btn btn-sm btn-info text-dark fw-semibold mass-action-btn"
+                        disabled
+                    >
+                        Marchează În curs de livrare
+                    </button>
+                    <button
+                        type="submit"
+                        name="action"
+                        value="livrata"
+                        class="btn btn-sm btn-success fw-semibold mass-action-btn"
+                        disabled
+                    >
+                        Marchează Livrate
+                    </button>
+                </form>
+            </section>
+        <% } %>
+
         <!-- Lista comenzilor -->
         <% if (listaComenzi.length > 0) { %>
             <div class="d-flex flex-column gap-3">
                 <% listaComenzi.forEach(function(comanda) { %>
-                    <article class="manager-order-card p-4 <%= comanda.status === 'Livrata' ? 'order-shipped' : '' %>">
+                    <article class="manager-order-card p-4 <%= comanda.status === 'Livrata' ? 'order-shipped' : (comanda.status === 'In curs de livrare' ? 'order-in-transit' : '') %>">
                         <div class="row g-3 align-items-center">
 
                             <div class="col-lg-4">
                                 <div class="d-flex align-items-center gap-2 mb-2">
+                                    <input
+                                        type="checkbox"
+                                        form="massActionForm"
+                                        name="orderIds"
+                                        value="<%= comanda._id %>"
+                                        class="form-check-input manager-checkbox order-checkbox m-0"
+                                        <%= comanda.status === 'Livrata' ? 'disabled' : '' %>
+                                        title="<%= comanda.status === 'Livrata' ? 'Comandă deja livrată' : 'Selectează pentru acțiune în masă' %>"
+                                    >
+
                                     <span class="manager-order-id">
                                         #<%= comanda._id.toString().slice(-6).toUpperCase() %>
                                     </span>
 
                                     <% if (comanda.status === 'Livrata') { %>
                                         <span class="badge bg-success">Livrată</span>
+                                    <% } else if (comanda.status === 'In curs de livrare') { %>
+                                        <span class="badge bg-info text-dark">În curs de livrare</span>
                                     <% } else { %>
                                         <span class="badge bg-warning text-dark">În așteptare</span>
                                     <% } %>
@@ -178,7 +243,19 @@
                                 </div>
 
                                 <div class="d-flex flex-wrap gap-2">
-                                    <form action="/gestionar/comenzi/<%= comanda._id %>/shipped" method="POST" class="m-0 p-0">
+                                    <% if (comanda.status === 'In asteptare') { %>
+                                        <form action="/gestionar/comenzi/<%= comanda._id %>/in-livrare" method="POST" class="m-0 p-0">
+                                            <button type="submit" class="btn btn-sm btn-outline-info fw-semibold">
+                                                În curs de livrare
+                                            </button>
+                                        </form>
+                                    <% } else if (comanda.status === 'In curs de livrare') { %>
+                                        <button type="button" class="btn btn-sm btn-info text-dark fw-semibold" disabled>
+                                            În curs de livrare
+                                        </button>
+                                    <% } %>
+
+                                    <form action="/gestionar/comenzi/<%= comanda._id %>/livrata" method="POST" class="m-0 p-0">
                                         <button
                                             type="submit"
                                             class="btn btn-sm btn-success fw-semibold"
@@ -217,5 +294,50 @@
     <%- include('partials/footer', { fixedFooter: false }) %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const selectAll = document.getElementById('selectAllOrders');
+            const checkboxes = Array.from(document.querySelectorAll('.order-checkbox:not(:disabled)'));
+            const massBtns = Array.from(document.querySelectorAll('.mass-action-btn'));
+            const countBadge = document.getElementById('selectedCountBadge');
+
+            if (!selectAll) return;
+
+            if (checkboxes.length === 0) {
+                selectAll.disabled = true;
+            }
+
+            function syncMassActionUI() {
+                const selectedCount = checkboxes.filter(cb => cb.checked).length;
+
+                if (countBadge) {
+                    countBadge.textContent = selectedCount === 1 ? '1 selectată' : `${selectedCount} selectate`;
+                    countBadge.className = selectedCount > 0 ? 'badge bg-info text-dark' : 'badge bg-secondary';
+                }
+
+                massBtns.forEach(btn => {
+                    btn.disabled = selectedCount === 0;
+                });
+
+                if (checkboxes.length > 0) {
+                    selectAll.checked = selectedCount === checkboxes.length;
+                    selectAll.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+                }
+            }
+
+            selectAll.addEventListener('change', () => {
+                checkboxes.forEach(cb => {
+                    cb.checked = selectAll.checked;
+                });
+                syncMassActionUI();
+            });
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', syncMassActionUI);
+            });
+
+            syncMassActionUI();
+        })();
+    </script>
 </body>
 </html>

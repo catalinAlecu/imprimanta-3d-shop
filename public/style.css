@@ -236,7 +236,6 @@ body {
     text-decoration: underline;
 }
 
-
 .models-container {
     margin-top: 100px;
     padding-bottom: 50px;
@@ -279,50 +278,11 @@ body {
     border-radius: 8px;
 }
 
-CSS
-
-.cart-qty-control {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.cart-qty-btn {
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    width: 32px;
-    height: 32px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.cart-qty-btn:hover {
-    background-color: rgba(13, 202, 240, 0.2);
-    color: #0dcaf0;
-}
-
-.cart-qty-value {
-    min-width: 34px;
-    text-align: center;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 0 6px;
-    line-height: 32px;
-}
-
 /* === Pagina Coș de Cumpărături — Stil Matte Dark / Tech === */
 .cart-main {
     padding-bottom: 110px;
 }
 
-/* Card produs: suprafață mată opacă, bordură clară, fără blur și fără hover */
 .cart-item-card {
     background-color: #16181a;
     border: 1px solid #2b2f34;
@@ -330,7 +290,6 @@ CSS
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
-/* Sumar comandă: ușor mai deschis pentru ierarhie vizuală + bandă cyan sus */
 .cart-summary-card {
     position: sticky;
     top: 100px;
@@ -341,7 +300,6 @@ CSS
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-/* Cart pentru coș gol */
 .cart-empty-card {
     margin-top: 50px;
     max-width: 100%;
@@ -351,7 +309,6 @@ CSS
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
-/* Container imagine produs */
 .cart-img-wrapper {
     background-color: #ffffff;
     border: 1px solid #2b2f34;
@@ -373,7 +330,6 @@ CSS
     font-size: 0.85rem;
 }
 
-/* Text și detalii produs */
 .cart-product-link {
     color: #f8f9fa;
     text-decoration: none;
@@ -411,7 +367,6 @@ CSS
     margin-top: 0.25rem;
 }
 
-/* Control cantitate (- / +) cu aspect integrat în fundal */
 .cart-qty-control {
     background-color: #0f1113;
     border: 1px solid #32373d;
@@ -448,50 +403,254 @@ CSS
     line-height: 32px;
 }
 
-.manager-filter-btn {
-    color: #f8f9fa;
+/* === Panou Gestionar (Comenzi, Mass Action & Stocuri) — Stil Matte Dark === */
+.manager-main {
+    padding-bottom: 50px;
 }
 
-.manager-toolbar {
-    margin-top: 50px;
-    max-width: 100%;
-    background-color: #16181a;
-    border: 1px solid #2b2f34;
-    border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+.manager-subtitle {
+    color: #9aa0a6;
+    font-size: 0.92rem;
 }
 
-.manager-order-card {
-    margin-top: 50px;
-    max-width: 100%;
-    background-color: #16181a;
-    border: 1px solid #2b2f34;
-    border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-}
-
+/* Carduri KPI */
 .manager-kpi-card {
-    margin-top: 50px;
-    max-width: 100%;
     background-color: #16181a;
     border: 1px solid #2b2f34;
+    border-top: 3px solid #2b2f34;
     border-radius: 10px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-}
-
-.manager-kpi-label, 
-.manager-kpi-value.text-warning,
-.manager-kpi-value,
-.manager-kpi-value.text-info,
-.manager-kpi-value.text-success,
-.manager-kpi-value.manager-kpi-money {
+    height: 100%;
     text-align: center;
 }
 
+.manager-kpi-card.kpi-total    { border-top-color: #6c757d; }
+.manager-kpi-card.kpi-pending  { border-top-color: #ffc107; }
+.manager-kpi-card.kpi-verified { border-top-color: #0dcaf0; }
+.manager-kpi-card.kpi-shipped  { border-top-color: #198754; }
+.manager-kpi-card.kpi-revenue  { border-top-color: #0dcaf0; }
+
+.manager-kpi-label {
+    color: #9aa0a6;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.manager-kpi-value {
+    color: #ffffff;
+    font-size: 1.65rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.manager-kpi-money {
+    font-size: 1.4rem;
+    color: #0dcaf0;
+}
+
+/* Bare de filtre, căutare & Mass Action */
+.manager-toolbar {
+    background-color: #16181a;
+    border: 1px solid #2b2f34;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.mass-action-bar {
+    border-left: 3px solid #0dcaf0;
+}
+
+.manager-filter-btn {
+    color: #d0d4d9;
+    background-color: #0f1113;
+    border: 1px solid #2e3338;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.manager-filter-btn:hover {
+    color: #ffffff;
+    background-color: #1f2327;
+    border-color: #0dcaf0;
+}
+
+.manager-filter-btn.active {
+    color: #0f1113;
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    font-weight: 700;
+}
+
+.manager-search-input {
+    min-width: 220px;
+    background-color: #0f1113;
+    border: 1px solid #323840;
+    color: #ffffff;
+}
+
+.manager-search-input::placeholder {
+    color: #6c757d;
+}
+
+.manager-search-input:focus {
+    background-color: #0f1113;
+    border-color: #0dcaf0;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+/* Carduri Comenzi & Container Tabel Stocuri */
+.manager-order-card {
+    background-color: #16181a;
+    border: 1px solid #2b2f34;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.manager-order-card.order-shipped {
+    border-left: 3px solid #198754;
+}
+
+.manager-order-id {
+    font-family: monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.manager-meta {
+    color: #b0b6bc;
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.manager-meta strong {
+    color: #f8f9fa;
+}
+
+.manager-date {
+    color: #7c828a;
+    font-size: 0.82rem;
+}
+
+.manager-section-label {
+    color: #9aa0a6;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+
+.manager-items-list {
+    padding-left: 1.1rem;
+    color: #e2e6ea;
+    font-size: 0.92rem;
+}
+
+.manager-order-total {
+    color: #9aa0a6;
+    font-size: 0.95rem;
+}
+
+.manager-order-total span {
+    color: #0dcaf0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* Checkbox-uri Mass Action */
+.manager-checkbox {
+    width: 1.15rem;
+    height: 1.15rem;
+    background-color: #0f1113;
+    border: 1px solid #495057;
+    cursor: pointer;
+}
+
+.manager-checkbox:checked,
+.manager-checkbox:indeterminate {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.manager-checkbox:focus {
+    border-color: #0dcaf0;
+    box-shadow: none;
+}
+
+.manager-checkbox:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* === Pagina de Stocuri === */
+.stock-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #e9ecef;
+    --bs-table-hover-bg: #1c2024;
+    --bs-table-hover-color: #ffffff;
+    --bs-table-border-color: #262a2f;
+}
+
+.stock-table thead th {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9aa0a6;
+    padding: 0.85rem 0.75rem;
+    border-bottom: 1px solid #2e3338;
+    white-space: nowrap;
+}
+
+.stock-table tbody td {
+    padding: 0.9rem 0.75rem;
+    border-bottom: 1px solid #262a2f;
+}
+
+.stock-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.stock-thumb {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    object-fit: contain;
+    background-color: #ffffff;
+    border: 1px solid #2b2f34;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.stock-qty-input {
+    width: 78px;
+    background-color: #0f1113;
+    border: 1px solid #323840;
+    border-radius: 6px;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    color-scheme: dark;
+}
+
+.stock-qty-input:focus {
+    background-color: #0f1113;
+    border-color: #0dcaf0;
+    color: #ffffff;
+    box-shadow: none;
+}
+
+/* Link-uri Gestionar din Navbar */
 .nav-manager-link {
     color: #f8f9fa;
     text-decoration: none;
     font-weight: 600;
+    transition: color 0.2s ease;
 }
 
 .nav-manager-link:hover {
@@ -509,11 +668,31 @@ CSS
 
 .comenzi-plasate:hover {
     transform: scale(1.03);
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); 
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 768px) {
+    .manager-search-form {
+        width: 100%;
+    }
+
+    .manager-search-input {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .stock-thumb {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+    }
+
+    .stock-qty-input {
+        width: 68px;
+    }
 }
 
 /* Checkout */
-
 .checkout-main {
     padding-bottom: 110px;
 }
@@ -627,7 +806,6 @@ CSS
     color: var(--text-muted);
 }
 
-
 .product-image-container {
     background-color: #ffffff;
     padding: 1.5rem;
@@ -710,6 +888,7 @@ CSS
     color: var(--text-muted) !important;
     font-weight: 500;
 }
+
 footer {
-background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.2);
 }

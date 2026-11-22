@@ -42,6 +42,12 @@ const schemaImprimanta = new mongoose.Schema({
     default: true
   },
 
+  stoc: {
+    type: Number,
+    default: 5,
+    min: [0, 'Stocul nu poate fi negativ']
+  },
+
 categorie: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',

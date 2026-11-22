@@ -26,7 +26,7 @@ const ComandaSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['In asteptare', 'Verificata', 'Livrata'],
+        enum: ['In asteptare', 'In curs de livrare', 'Livrata'],
         default: 'In asteptare'
     }
 }, {
