@@ -17,7 +17,6 @@
         const stats = typeof statistici !== 'undefined' ? statistici : {
             total: listaComenzi.length,
             inAsteptare: 0,
-            verificate: 0,
             expediate: 0,
             valoareTotala: 0
         };
@@ -54,12 +53,6 @@
                     <div class="manager-kpi-value text-warning"><%= stats.inAsteptare %></div>
                 </div>
             </div>
-            <div class="col-6 col-md-4 col-xl">
-                <div class="manager-kpi-card kpi-verified p-3">
-                    <div class="manager-kpi-label">Verificate</div>
-                    <div class="manager-kpi-value text-info"><%= stats.verificate %></div>
-                </div>
-            </div>
             <div class="col-6 col-md-6 col-xl">
                 <div class="manager-kpi-card kpi-shipped p-3">
                     <div class="manager-kpi-label">Livrate</div>
@@ -88,12 +81,6 @@
                     class="btn btn-sm manager-filter-btn <%= filtruCurent === 'In asteptare' ? 'active' : '' %>"
                 >
                     În așteptare (<%= stats.inAsteptare %>)
-                </a>
-                <a
-                    href="/gestionar/comenzi?status=Verificata<%= querySuffix %>"
-                    class="btn btn-sm manager-filter-btn <%= filtruCurent === 'Verificata' ? 'active' : '' %>"
-                >
-                    Verificate (<%= stats.verificate %>)
                 </a>
                 <a
                     href="/gestionar/comenzi?status=Livrata<%= querySuffix %>"
@@ -134,8 +121,6 @@
 
                                     <% if (comanda.status === 'Livrata') { %>
                                         <span class="badge bg-success">Livrată</span>
-                                    <% } else if (comanda.status === 'Verificata') { %>
-                                        <span class="badge bg-info text-dark">Verificată</span>
                                     <% } else { %>
                                         <span class="badge bg-warning text-dark">În așteptare</span>
                                     <% } %>
@@ -193,16 +178,6 @@
                                 </div>
 
                                 <div class="d-flex flex-wrap gap-2">
-                                    <form action="/gestionar/comenzi/<%= comanda._id %>/verifica" method="POST" class="m-0 p-0">
-                                        <button
-                                            type="submit"
-                                            class="btn btn-sm <%= comanda.verificata ? 'btn-info text-dark fw-semibold' : 'btn-outline-info' %>"
-                                            <%= comanda.status === 'Livrata' ? 'disabled' : '' %>
-                                        >
-                                            <%= comanda.verificata ? '✓ Verificată' : '☐ Bifează verificată' %>
-                                        </button>
-                                    </form>
-
                                     <form action="/gestionar/comenzi/<%= comanda._id %>/shipped" method="POST" class="m-0 p-0">
                                         <button
                                             type="submit"

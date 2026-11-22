@@ -498,6 +498,20 @@ CSS
     color: #0dcaf0;
 }
 
+.comenzi-plasate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 500;
+    transition: transform 0.25s ease, color 0.25s ease, text-shadow 0.25s ease;
+}
+
+.comenzi-plasate:hover {
+    transform: scale(1.03);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); 
+}
+
 /* Checkout */
 
 .checkout-main {

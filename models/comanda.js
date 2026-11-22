@@ -24,10 +24,6 @@ const ComandaSchema = new mongoose.Schema({
         county: { type: String, required: true },
         zipCode: { type: String, required: true }
     },
-    verificata: {
-        type: Boolean,
-        default: false
-    },
     status: {
         type: String,
         enum: ['In asteptare', 'Verificata', 'Livrata'],
